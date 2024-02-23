@@ -125,6 +125,29 @@ python main.py --input_folder /path/to/folder/of/audios --output_directory /outp
 
 ```
 
+# Next Steps
+
+Generator of multiple types of dataset formats
+
+Dataset converter. for example, from LibriSpeech to Common Voice and vice versa, etc.
+
+- [ ] **LibriSpeech**
+
+- [ ] **Common Voice 11**
+
+- [ ] **VoxPopuli**
+
+- [ ] **TED-LIUM**
+
+- [ ] **GigaSpeech**
+
+- [ ] **SPGISpeech**
+
+- [ ] **Earnings-22**
+
+- [ ] **AMI**
+
+
 ## Used packages in this project
 This project uses several open-source libraries and tools for audio processing. Special thanks to the contributors of these projects.
 
