@@ -119,7 +119,7 @@ python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /out
 
 python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types None
 
-python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types None
+python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types enhance_audio_resembleai
 
 python main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --types deepfilternet 
 
