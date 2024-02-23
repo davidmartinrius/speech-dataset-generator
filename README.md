@@ -97,7 +97,7 @@ The main script `main.py` accepts command-line arguments for specifying the inpu
 
 ```bash
 
-python audio_processor.py --input_file_path <path_to_audio_file> --output_directory <output_directory> --range_times <start-end> --types <filter_types>
+python main.py --input_file_path <path_to_audio_file> --output_directory <output_directory> --range_times <start-end> --types <filter_types>
 
 ```
 
