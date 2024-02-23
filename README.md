@@ -130,9 +130,7 @@ This project uses several open-source libraries and tools for audio processing. 
 
 - Python 3.10
 
-- [whisperx](https://github.com/wisemanlab/whisperx) (v3.1.1)
-
-- [faster-whisper](https://github.com/wisemanlab/faster-whisper) (v1.0.0)
+- [whisperx]([https://github.com/wisemanlab/whisperx](https://github.com/m-bain/whisperX?tab=readme-ov-file)) (v3.1.1)
 
 - [pydub](https://github.com/jiaaro/pydub) (v0.25.1)
 
