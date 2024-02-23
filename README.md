@@ -93,7 +93,7 @@ HF_TOKEN=yourtoken
 
 ## Usage
 
-The main script `audio_processor.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of filters. You can process a single file or an entire folder of audio files.
+The main script `main.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of filters. You can process a single file or an entire folder of audio files.
 
 ```bash
 
