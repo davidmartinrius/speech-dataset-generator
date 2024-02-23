@@ -39,11 +39,9 @@ HF_TOKEN = os.environ.get("HF_TOKEN")
 
 def get_device():
     if torch.cuda.is_available():
-        #device = torch.device("cuda")
         device = "cuda"
         print("CUDA is available. Using GPU.")
     else:
-        #device = torch.device("cpu")
         device = "cpu"
         print("CUDA is not available. Using CPU.")
         
@@ -55,7 +53,6 @@ class dataset_generator:
         
         ts = str(int(time.time()))
 
-        #file_name = os.path.join(path_to_store_audio, ts_encoded + str(random.getrandbits(128)) + ".wav")
         file_name = os.path.join(self.wavs_directory, ts + str(self.generateRandomNumber(24)) + ".wav")
 
         print("file_name")
@@ -335,9 +332,6 @@ class audio_manager:
         audio_chunks = [audio[:, i:i + seconds * info.sample_rate]
                         for i in range(0, audio.shape[1], seconds * info.sample_rate)]
 
-        print("audio_chunks")
-        print(audio_chunks)
-
         enhanced_chunks = []
         for ac in audio_chunks:
             enhanced_chunks.append(enhance(model, df_state, ac))
@@ -395,8 +389,6 @@ class audio_manager:
         
         # Calculate chunk size based on duration
         chunk_size = int(sr * chunk_duration)
-        
-        print("chunk_size", chunk_size)
 
         # Split the audio into chunks
         audio_chunks = self.split_audio_into_chunks(dwav.cpu().numpy(), chunk_size)
@@ -431,9 +423,6 @@ class audio_manager:
         u = Unsilence(path_to_audio_file)
         
         u.detect_silence()
-        
-        #estimated_time = u.estimate_time(audible_speed=5, silent_speed=2)  # Estimate time savings
-        #print(estimated_time)
 
         #rewrite the file with no silences
         u.render_media(path_to_audio_file, audio_only=True)  # Audio only specified
@@ -457,7 +446,6 @@ class audio_manager:
             average_scores[metric_name] = average_score
             
         if average_scores['mosnet'] >= 3:
-            print("valid audio")
             return True
 
         del self.metrics
@@ -510,17 +498,13 @@ if __name__ == "__main__":
         audio_files = [file for file in all_files if file.lower().endswith(('.mp3', '.wav', '.flac', '.ogg', '.aac', '.wma'))]
 
         for audio_file in audio_files:
-            # You can perform operations on each audio file here
-            # For example, print the file name
+            
             print("Processing:", audio_file)
             
-            # If you want to get the full path to the file, you can use os.path.join
             current_input_file_path = os.path.join(input_folder, audio_file)
             
             dataset_generator().process(current_input_file_path, output_directory, start, end, filter_types)
 
-            # Now, you can use 'current_input_file_path' to load and process the audio file as needed
-            # For simplicity, let's just print the full path
             print("Full Path:", current_input_file_path)
 
     elif input_file_path:
