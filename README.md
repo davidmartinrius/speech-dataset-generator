@@ -2,6 +2,27 @@
 
 This repository is dedicated to creating datasets suitable for training text-to-speech or speech-to-text models. The primary functionality involves transcribing audio files, enhancing audio quality when necessary, and generating datasets.
 
+
+## Here are the key functionalities of the project:
+
+1. **Dataset Generation:** The project allows for the creation of datasets with Mean Opinion Score (MOS).
+
+2. **Silence Removal:** It includes a feature to remove silences from audio files, enhancing the overall quality.
+
+3. **Sound Quality Improvement:** The project focuses on improving the quality of the audio.
+
+4. **Audio Segmentation:** It can segment audio files within specified second ranges.
+
+5. **Transcription:** The project transcribes the segmented audio, providing a textual representation.
+
+6. **Gender Identification:** It identifies the gender of each speaker in the audio.
+
+7. **Pyannote Embeddings:** Utilizes pyannote embeddings for speaker detection across multiple audio files.
+
+8. **Automatic Speaker Naming:** Automatically assigns names to speakers detected in multiple audios.
+
+9. **Multiple Speaker Detection:** Capable of detecting multiple speakers within each audio file.
+
 ### Example of the ouput folder:
 ```plaintext
 output
