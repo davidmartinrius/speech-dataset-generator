@@ -125,6 +125,14 @@ python main.py --input_folder /path/to/folder/of/audios --output_directory /outp
 
 ```
 
+## Notes
+
+An input audio may not be used completely. Here some reasons:
+- The range_times do not fit a transcripted segment.
+- The segment has music or not enough quality (MOS under 3), even when enhanced.
+
+The gender detection is not accurate enough when probably mixed. I mean there is no clear gender but maybe it reurns male.
+
 # Next Steps
 
 ## Support multiple dataset types
