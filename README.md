@@ -155,6 +155,8 @@ This project uses several open-source libraries and tools for audio processing. 
 
 - [whisperx](https://github.com/m-bain/whisperX?tab=readme-ov-file) (v3.1.1)
 
+- [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (1.0.0) 
+
 - [pydub](https://github.com/jiaaro/pydub) (v0.25.1)
 
 - [python-dotenv](https://github.com/theskumar/python-dotenv) (v1.0.1)
@@ -172,5 +174,7 @@ This project uses several open-source libraries and tools for audio processing. 
 - [pyannote](https://huggingface.co/pyannote) (embedding model and speaker diarization model)
 
 ## License
+
+If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, all others are under the MIT license.
 
 This project is licensed under the [MIT License](LICENSE).
