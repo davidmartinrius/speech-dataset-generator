@@ -127,6 +127,7 @@ python main.py --input_folder /path/to/folder/of/audios --output_directory /outp
 
 # Next Steps
 
+## Support multiple dataset types
 Generator of multiple types of dataset formats
 
 Dataset converter. for example, from LibriSpeech to Common Voice and vice versa, etc.
@@ -148,6 +149,12 @@ I have to look for a way to extract all the needed features for each dataset typ
 - [ ] **Earnings-22**
 
 - [ ] **AMI**
+      
+- [ ] **VCTK**
+
+## External input sources
+
+- [ ] **Youtube** (https://github.com/ytdl-org/youtube-dl)
 
 
 ## Used packages in this project
