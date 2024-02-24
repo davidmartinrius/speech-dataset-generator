@@ -78,13 +78,14 @@ class dataset_generator:
 
         return file_name
 
-    def write_data_to_csv(self, text, file_name, speaker_name, gender, duration):
+    def write_data_to_csv(self, text, file_name, speaker_name, gender, language, duration):
         newData = {
             'text': text,
             'audio_file': file_name,
             'speaker_name': speaker_name,
             'gender': gender,
-            'duration': duration
+            'duration': duration,
+            'language': language
         }
 
         with open(self.csv_file_name, 'a', encoding='utf-8') as csvFile:
@@ -214,8 +215,10 @@ class dataset_generator:
 
         audio = whisperx.load_audio(enhanced_audio_file_path)
         result = model.transcribe(audio, batch_size=batch_size)
+
+        language = result["language"]
         
-        model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=device)
+        model_a, metadata = whisperx.load_align_model(language_code=language, device=device)
         result = whisperx.align(result["segments"], model_a, metadata, audio, device, return_char_alignments=False)
         
         del model; gc.collect(); torch.cuda.empty_cache()
@@ -266,7 +269,7 @@ class dataset_generator:
                         
             gender = self.get_gender(segmentation)
             
-            self.write_data_to_csv(segment["text"], self.csv_file_name, speaker_name, gender, duration)
+            self.write_data_to_csv(segment["text"], self.csv_file_name, speaker_name, gender, language, duration)
     
 class audio_manager:
     
