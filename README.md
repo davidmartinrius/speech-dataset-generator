@@ -136,7 +136,7 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 # Next Steps
 
 ## Support multiple dataset types
-Generator of multiple types of dataset formats
+Generator of multiple types of datasets
 
 Dataset converter. for example, from LibriSpeech to Common Voice and vice versa, etc.
 
@@ -164,6 +164,9 @@ I have to look for a way to extract all the needed features for each dataset typ
 
 - [ ] **Youtube** (https://github.com/ytdl-org/youtube-dl)
 
+## Vector database
+
+- [ ] **Store speaker embeddings in a vector database such as Milvus, Elastic Search, Chroma**
 
 ## Used packages in this project
 This project uses several open-source libraries and tools for audio processing. Special thanks to the contributors of these projects.
