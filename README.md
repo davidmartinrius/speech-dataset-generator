@@ -131,6 +131,8 @@ Generator of multiple types of dataset formats
 
 Dataset converter. for example, from LibriSpeech to Common Voice and vice versa, etc.
 
+I have to look for a way to extract all the needed features for each dataset type. Also find the best way to divide the dataset into train, dev and test taking into account the input data provided by the user. 
+
 - [ ] **LibriSpeech**
 
 - [ ] **Common Voice 11**
