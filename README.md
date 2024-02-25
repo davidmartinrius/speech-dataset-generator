@@ -59,23 +59,7 @@ python3.10 -m venv venv
 
 source venv/bin/activate
 
-pip install whisperx==3.1.1
-
-pip install --upgrade faster-whisper==1.0.0
-
-pip install pydub==0.25.1
-
-pip install python-dotenv==1.0.1
-
-pip install inaSpeechSegmenter==0.7.7
-
-pip install unsilence==1.0.9
-
-pip install deepfilternet
-
-pip install resemble-enhance==0.0.1
-
-pip install git+https://github.com/aliutkus/speechmetrics#egg=speechmetrics
+pip install -r requirements.txt
 
 ```
 
@@ -168,6 +152,16 @@ I have to look for a way to extract all the needed features for each dataset typ
 
 - [ ] **Store speaker embeddings in a vector database such as Milvus, Elastic Search, Chroma**
 
+## Gradio interface
+
+- [] **Generate datasets**
+
+- [] **Dataset converter**
+
+## Docker image
+
+- [] Create a dockable image for ease of use.
+
 ## Used packages in this project
 This project uses several open-source libraries and tools for audio processing. Special thanks to the contributors of these projects.
 
@@ -193,8 +187,10 @@ This project uses several open-source libraries and tools for audio processing. 
 
 - [pyannote](https://huggingface.co/pyannote) (embedding model and speaker diarization model)
 
+- [youtube-dl](https://github.com/ytdl-org/youtube-dl?tab=Unlicense-1-ov-file)
+
 ## License
 
-If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, all others are under the MIT license.
+If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, youtube-dl has no license and all others are under the MIT license.
 
 This project is licensed under the [MIT License](LICENSE).
