@@ -49,8 +49,6 @@ output
 ```
 ## Installation
 
-Due to existing incompatibilities among packages, generating a requirements.txt file is currently not feasible. However, installing the packages in the specified order should still work, even in the presence of conflicting dependencies as reported by pip.
-
 Please note that this project has been tested and verified to work on Ubuntu 22. While it has not been tested on macOS, and Windows.
 
 ```bash
