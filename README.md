@@ -146,14 +146,13 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 
 - [ ] **Detect the speech speed rate for each sentence and add it to the csv output file.**
 
-## Support multiple dataset types
-Generator of multiple types of datasets
+## Support multiple datasets
 
-Dataset converter. for example, from LibriSpeech to Common Voice and vice versa, etc.
-
-I have to look for a way to extract all the needed features for each dataset type. Also find the best way to divide the dataset into train, dev and test taking into account the input data provided by the user. 
+Generator of multiple types of datasets:
 
 - [ ] **LibriSpeech**
+
+- [ ] **LJSpeech**
 
 - [ ] **Common Voice 11**
 
@@ -168,8 +167,14 @@ I have to look for a way to extract all the needed features for each dataset typ
 - [ ] **Earnings-22**
 
 - [ ] **AMI**
-      
+    
 - [ ] **VCTK**
+
+## Dataset converter.
+
+For example, from LibriSpeech to Common Voice and vice versa, etc.
+
+I have to look for a way to extract all the needed features for each dataset type. Also find the best way to divide the dataset into train, dev and test taking into account the input data provided by the user. 
 
 ## Gradio interface
 

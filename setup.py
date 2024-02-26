@@ -13,12 +13,12 @@ setup(
         'pydub==0.25.1',
         'python-dotenv==1.0.1',
         'inaSpeechSegmenter==0.7.7',
-        'git+https://github.com/davidmartinrius/unsilence.git',
+        'unsilence @ git+https://github.com/davidmartinrius/unsilence.git',
         'deepfilternet',
-        'git+https://github.com/davidmartinrius/resemble-enhance.git',
-        'git+https://github.com/aliutkus/speechmetrics#egg=speechmetrics',
+        'resemble-enhance @ git+https://github.com/davidmartinrius/resemble-enhance.git',
+        'speechmetrics @ git+https://github.com/aliutkus/speechmetrics#egg=speechmetrics',
         'youtube-dl==2021.12.17',
-        'yt-dlp==2023.12.30',
+        'yt-dlp',
         'chromadb==0.4.23'
     ],
     entry_points={
