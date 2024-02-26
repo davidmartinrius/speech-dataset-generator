@@ -23,6 +23,8 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 9. **Multiple Speaker Detection:** Capable of detecting multiple speakers within each audio file.
 
+10. **Store speaker embeddings:** The speakers are detected and stored in a Chroma database, so you do not need to assign a speaker name.
+
 ### Example of the ouput folder:
 ```plaintext
 output
@@ -38,18 +40,19 @@ output
 
 ```plaintext
 
-
-|   text                |   audio_file                |   speaker_name  |   gender   |   duration   |
-|-----------------------|-----------------------------|-----------------|------------|--------------|
-|   Hello, how are you? |   wavs/1272-128104-0000.wav |   Speaker12     |   male     |   4.5        |
-|   This is a test.     |   wavs/1272-128104-0001.wav |   Speaker45     |   female   |   6.2        |
-|   ...                 |   ...                       |   ...           |   ...      |   ...        |
-|   Goodbye!            |   wavs/1272-128104-0225.wav |   Speaker78     |   male     |   5.1        |
+|   text                        |   audio_file                |   speaker_name  |   gender   |   duration   |   language   |
+|-------------------------------|-----------------------------|-----------------|------------|--------------|--------------|
+|   Hello, how are you?         |   wavs/1272-128104-0000.wav |   Speaker12     |   male     |   4.5        |   en         |
+|   Hola, ¿cómo estás?          |   wavs/1272-128104-0001.wav |   Speaker45     |   female   |   6.2        |   es         |
+|   This is a test.             |   wavs/1272-128104-0002.wav |   Speaker23     |   male     |   3.8        |   en         |
+|   ¡Adiós!                     |   wavs/1272-128104-0003.wav |   Speaker67     |   female   |   7.0        |   es         |
+|   ...                         |   ...                       |   ...           |   ...      |   ...        |   ...        |
+|   Goodbye!                    |   wavs/1272-128104-0225.wav |   Speaker78     |   male     |   5.1        |   en         |
 
 ```
 ## Installation
 
-Please note that this project has been tested and verified to work on Ubuntu 22. While it has not been tested on macOS, and Windows.
+Please note that this project has been tested and verified to work on Ubuntu 22. Although it has not been tested on macOS and Windows nor on other unix distributions.
 
 ```bash
 
@@ -83,9 +86,11 @@ python main.py --input_file_path <path_to_audio_file> --output_directory <output
 
 ```
 
-- `--input_file_path`: Path to the input audio file.
+- `--input_file_path`: (required) Path to the input audio file. Cannot be used with input folder.
 
-- `--input_folder`: Path to the input folder containing audio files.
+- `--input_folder`: (required) Path to the input folder containing audio files. Cannot be used with input_file_path
+
+- `--youtube_download`: (optional)Link or links separated by space of youtube videos or playlists. Can be combined with --input_file_path or --input_folder
 
 - `--output_directory`: Output directory for audio files.
 
@@ -105,6 +110,12 @@ python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /out
 
 python main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --types deepfilternet 
 
+python main.py --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+
+python main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+
+python main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+
 ```
 
 ## Notes
@@ -116,6 +127,18 @@ An input audio may not be used completely. Here some reasons:
 The gender detection is not accurate enough when probably mixed. I mean there is no clear gender but maybe it reurns male.
 
 # Next Steps
+
+## External input sources
+
+- [X] [**yt-dlp**](https://github.com/yt-dlp/yt-dlp)
+
+## Vector database
+
+- [X] **Store speaker embeddings in Chroma vector database**
+
+## Speech rate 
+
+- [ ] **Detect the speech speed rate for each sentence and add it to the csv output file.**
 
 ## Support multiple dataset types
 Generator of multiple types of datasets
@@ -142,23 +165,15 @@ I have to look for a way to extract all the needed features for each dataset typ
       
 - [ ] **VCTK**
 
-## External input sources
-
-- [ ] **Youtube** (https://github.com/ytdl-org/youtube-dl)
-
-## Vector database
-
-- [ ] **Store speaker embeddings in a vector database such as Milvus, Elastic Search, Chroma**
-
 ## Gradio interface
 
-- [] **Generate datasets**
+- [ ] **Generate datasets**
 
-- [] **Dataset converter**
+- [ ] **Dataset converter**
 
 ## Docker image
 
-- [] Create a dockable image for ease of use.
+- [ ] **Create a dockable image for ease of use.**
 
 ## Used packages in this project
 This project uses several open-source libraries and tools for audio processing. Special thanks to the contributors of these projects.
@@ -185,10 +200,10 @@ This project uses several open-source libraries and tools for audio processing. 
 
 - [pyannote](https://huggingface.co/pyannote) (embedding model and speaker diarization model)
 
-- [youtube-dl](https://github.com/ytdl-org/youtube-dl?tab=Unlicense-1-ov-file)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
 ## License
 
-If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, youtube-dl has no license and all others are under the MIT license.
+If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, yt-dlp has no license and all others are under the MIT license.
 
 This project is licensed under the [MIT License](LICENSE).

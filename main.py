@@ -7,11 +7,11 @@ import os
 import random
 from dotenv import load_dotenv
 import argparse
+import subprocess
 
 import speechmetrics #https://github.com/aliutkus/speechmetrics
 import whisperx
 from pydub import AudioSegment
-#import chromadb
 from pyannote.audio import Model
 from scipy.spatial.distance import cdist
 from pyannote.core import Segment
@@ -23,11 +23,13 @@ from inaSpeechSegmenter import Segmenter
 from inaSpeechSegmenter.export_funcs import seg2csv, seg2textgrid
 from df.enhance import enhance, init_df, load_audio, save_audio
 
-#TODO
 import torchaudio
 from resemble_enhance.enhancer.inference import denoise, enhance as resemble_enhancer
 from scipy.io.wavfile import write
 from scipy.spatial.distance import cdist
+import yt_dlp
+import copy
+import chromadb
 
 load_dotenv()
 
@@ -39,9 +41,11 @@ HF_TOKEN = os.environ.get("HF_TOKEN")
 
 def get_device():
     if torch.cuda.is_available():
+        #device = torch.device("cuda")
         device = "cuda"
         print("CUDA is available. Using GPU.")
     else:
+        #device = torch.device("cpu")
         device = "cpu"
         print("CUDA is not available. Using CPU.")
         
@@ -53,10 +57,8 @@ class dataset_generator:
         
         ts = str(int(time.time()))
 
-        file_name = os.path.join(self.wavs_directory, ts + str(self.generateRandomNumber(24)) + ".wav")
-
-        print("file_name")
-        print(file_name)
+        #file_name = os.path.join(path_to_store_audio, ts_encoded + str(random.getrandbits(128)) + ".wav")
+        file_name = os.path.join(self.wavs_directory, ts + str(self.generate_random_speaker_name(24)) + ".wav")
 
         t1 = start * 1000
         t2 = end * 1000
@@ -78,83 +80,73 @@ class dataset_generator:
 
         return file_name
 
-    def write_data_to_csv(self, text, file_name, speaker_name, gender, language, duration):
-        newData = {
-            'text': text,
-            'audio_file': file_name,
-            'speaker_name': speaker_name,
-            'gender': gender,
-            'duration': duration,
-            'language': language
-        }
+    def write_data_to_csv(self, transcription, file_name, language):
+        
+        for segment in transcription["segments"]:
+            
+            newData = {
+                'text': segment["text"],
+                'audio_file': file_name,
+                'speaker': segment["generated_speaker_name"],
+                'gender': segment["gender"],
+                'duration': segment["duration"],
+                'language': language
+            }
 
-        with open(self.csv_file_name, 'a', encoding='utf-8') as csvFile:
-            csvFile.write(str(newData) +"\n")
+            with open(self.csv_file_name, 'a', encoding='utf-8') as csvFile:
+                csvFile.write(str(newData) +"\n")
 
-    def generateRandomNumber(self, digits):
+    def generate_random_speaker_name(self, digits):
         finalNumber = ""
         for i in range(digits // 16):
             finalNumber = finalNumber + str(math.floor(random.random() * 10000000000000000))
         finalNumber = finalNumber + str(math.floor(random.random() * (10 ** (digits % 16))))
-        return int(finalNumber)
+        return f"speaker_{finalNumber}"
 
-    #TODO Search existing speakers in the database with speaker embeddings + pyannote.
-    def get_speaker_name(self, collection, audio_embeddings_infencer, file_name, speakers_list):
+    def get_speaker_info(self, collection, audio_embeddings_infencer, file_name):
 
         current_speaker_embedding = audio_embeddings_infencer(file_name)
+        
+        # Normalize embeddings
+        current_speaker_embedding = (current_speaker_embedding / np.linalg.norm(current_speaker_embedding)).tolist()
 
-        if not speakers_list:
-            speaker_name = self.generateRandomNumber(24)
-        
-            speakers_list.append({
-                'speaker_embeddings': current_speaker_embedding,
-                'speaker_name': speaker_name
-            })
-            
-            return
-        
-        for existing_speaker in speakers_list:
-            
-            distance = cdist([current_speaker_embedding], [existing_speaker['speaker_embeddings']], metric="cosine")[0,0]
-
-            if distance < 0.15:
-                return existing_speaker['speaker_name']
-
-        speaker_name = self.generateRandomNumber(24)
-        
-        speakers_list.append({
-            'speaker_embeddings': current_speaker_embedding,
-            'speaker_name': speaker_name
-        })
-        
-        return speaker_name
-    
-        #TODO get speaker names from chroma database. Search by embeddings. Do this inside get_speaker_name
-        current_speaker_embedding = audio_embeddings_infencer(file_name)
-
-        #search similar embedding in the database or create a new speaker
-        
-        #pending to filter by embeddings distance
-        # do nearest neighbor search to find similar embeddings or documents, supports filtering
         results = collection.query(
             query_embeddings=[current_speaker_embedding],
             n_results=1,
-            #where={"cosine": "gt1"},
+            include=["metadatas", "distances",  "embeddings"]
         )
-                
-        if results:
-            speaker_name = results.ids[0][0]
-        else:
-            speaker_name = self.generateRandomNumber(24)
+        
+        if not results["distances"][0]:
             
+            speaker_name = self.generate_random_speaker_name(24)
+
             collection.add(
-                embeddings=[current_speaker_embedding],
-                #metadatas=[{"speaker_name": speaker_name ],
+                embeddings=np.array([current_speaker_embedding]),
+                metadatas=[{"speaker_name": speaker_name }],
                 ids=[speaker_name]
             )
+        
+            return speaker_name
+        
+        distance = cdist([current_speaker_embedding], [results["embeddings"][0][0]], metric="cosine")[0,0]
+
+        if distance < 0.15:
             
-        return speaker_name
-    
+            speaker_name = results["metadatas"][0][0]["speaker_name"]
+            
+            return speaker_name
+        else:
+            
+            speaker_name = self.generate_random_speaker_name(24)
+
+            collection.add(
+                embeddings=np.array([current_speaker_embedding]),
+                metadatas=[{"speaker_name": speaker_name }],
+                ids=[speaker_name]
+            )
+        
+            return speaker_name
+            
     def get_gender(self, segmentation):
 
         labels = [item[0] for item in segmentation if item[0] in ('male', 'female')]
@@ -166,7 +158,195 @@ class dataset_generator:
         else:
             return 'no_gender'
         
-    def process(self, path_to_audio_file, output_directory, range_start, range_end, filter_types):    
+    def get_transcription(self, enhanced_audio_file_path):
+        device = get_device()
+        batch_size = 16 # reduce if low on GPU mem
+        #compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
+        compute_type="int8"
+
+        # 1. Transcribe with original whisper (batched)
+        model = whisperx.load_model("large-v3", device, compute_type=compute_type)
+
+        audio = whisperx.load_audio(enhanced_audio_file_path)
+        result = model.transcribe(audio, batch_size=batch_size)
+        
+        language = result["language"]
+        
+        model_a, metadata = whisperx.load_align_model(language_code=language, device=device)
+        result = whisperx.align(result["segments"], model_a, metadata, audio, device, return_char_alignments=False)
+
+        diarize_model = whisperx.DiarizationPipeline(model_name='pyannote/speaker-diarization@2.1', use_auth_token=HF_TOKEN, device=device)
+        diarize_segments = diarize_model(audio)
+                
+        result = whisperx.assign_word_speakers(diarize_segments, result)
+        
+        # this is needed to fix some items that only have word, but don't have start, end, score and speaker.
+        for i, segment in enumerate(result["segments"]):
+            wordlevel_info = []
+            for iw, word in enumerate(segment["words"]):
+                
+                if "start" not in word:
+                    
+                    if iw-1 >= 0:  # Check if iw-1 is a valid index
+                        word["start"]   = round(segment["words"][iw-1]["end"] + 0.001, 3)
+                        word['score']   = segment["words"][iw-1]["score"]
+                        word['speaker'] = segment["words"][iw-1]["speaker"]
+                    elif i-1 >= 0:
+                        # Use the last word of the previous segment
+                        word["start"]   = round(result["segments"][i-1]["words"][-1]["end"] + 0.001, 3)
+                        word["score"]   = result["segments"][i-1]["words"][-1]["score"]
+                        word["speaker"] = result["segments"][i-1]["words"][-1]["speaker"]
+                    else:
+                        word["start"] = 0.001
+                        word["score"] = 1
+                        word["speaker"] = segment["speaker"]
+                    
+                    if iw+1 < len(segment["words"]) and 'start' in segment["words"][iw+1]:  # Check if iw+1 is a valid index
+                        word["end"]     = round(segment["words"][iw+1]["start"] - 0.001, 3)
+                        word["score"]   = segment["words"][iw+1]["score"]
+                        word["speaker"] = segment["words"][iw+1]["speaker"]
+                    elif i+1 < len(result["segments"]) and 'start' in result["segments"][i+1]["words"][0]:
+                        # Use the first word of the next segment
+                        word["end"]     = round(result["segments"][i+1]["words"][0]["start"] - 0.001, 3)
+                        word["score"]   = result["segments"][i+1]["words"][0]["score"]
+                        word["speaker"]   = result["segments"][i+1]["words"][0]["speaker"]
+                    else:
+                        word["end"] = 0.001
+                        word["score"] = 1
+                        word["speaker"] = segment["speaker"]
+
+                #print("current word", word)
+                wordlevel_info.append({
+                    'word':word["word"],
+                    'start':word["start"],
+                    'end':word["end"],
+                    'speaker':word['speaker'],
+                    'score':word['score']
+                })
+            
+            segment["words"] = wordlevel_info 
+                
+        fixed_segments = []
+        for segment in result["segments"]:
+            
+            current_speaker = None
+            current_words = []
+            duration = segment["end"] - segment["start"]
+
+            # Iterate over each word in the segment
+            for word in segment["words"]:
+                speaker = word["speaker"]
+
+                if not current_speaker or current_speaker == speaker:
+                    current_words.append(word)
+                else:
+                    fixed_segments.append({
+                        "speaker": current_speaker,
+                        "start": current_words[0]["start"] if current_words else None,
+                        "end": current_words[-1]["end"] if current_words else None,
+                        "text": " ".join(w["word"] for w in current_words),
+                        "words": current_words,
+                    })
+
+                    # Start a new list for the current speaker
+                    current_words = [word]
+                
+                current_speaker = speaker
+
+            # Save the words for the last speaker in the segment
+            if current_speaker is not None:
+                fixed_segments.append({
+                    "speaker": current_speaker,
+                    "start": current_words[0]["start"] if current_words else None,
+                    "end": current_words[-1]["end"] if current_words else None,
+                    "text": " ".join(w["word"] for w in current_words),
+                    "words": current_words,
+                })
+                    
+        result["segments"] = fixed_segments
+        
+        del model; gc.collect(); torch.cuda.empty_cache()
+        del diarize_segments
+        
+        return result, language
+        
+    def assign_name_to_each_speaker(self, transcription, collection):
+        
+        existing_speakers = {}
+
+        for segment in transcription["segments"]:
+            
+            speaker = segment["speaker"]
+            duration = segment["end"] - segment["start"]
+
+            if "speaker" not in existing_speakers or ("speaker" in existing_speakers and duration > existing_speakers[speaker]["end"] - existing_speakers[speaker]["start"]):
+                existing_speakers[speaker] = {
+                    "speaker": speaker,
+                    "audio_file": segment["audio_file"],
+                    "start": segment["start"],
+                    "end": segment["end"],
+                }
+                
+        model = Model.from_pretrained("pyannote/embedding", use_auth_token=HF_TOKEN)
+        audio_embeddings_infencer = Inference(model, window="whole")
+        
+        #for existing_speaker in existing_speakers:
+        for speaker, existing_speaker in existing_speakers.items():
+            
+            generated_speaker_name = self.get_speaker_info(collection, audio_embeddings_infencer, existing_speaker["audio_file"])
+            
+            existing_speaker["generated_speaker_name"] = generated_speaker_name
+        
+        for segment in transcription["segments"]:
+            
+            segment["generated_speaker_name"] = existing_speaker["generated_speaker_name"]
+        
+        return transcription
+        
+    def filter_transcription_segments_and_assign_values(self, transcription, range_start, range_end, enhanced_audio_file_path):
+       
+        seg = Segmenter()
+        valid_segments = []
+        for segment in transcription["segments"]:
+            start = segment["start"]
+            end = segment["end"]
+            
+            duration = segment["end"] - segment["start"]
+            
+            if duration < range_start or duration > range_end:
+                continue
+            
+            file_name = self.create_audio_segment(start, end, enhanced_audio_file_path)
+            
+            segmentation = seg(file_name)
+            has_music = self.audio_manager_instance.has_music(segmentation)
+
+            if has_music:
+                print(f"Audio has music. Discarted from {start} to {end} of {enhanced_audio_file_path}")
+                os.remove(file_name)
+                continue
+            
+            #Verify the quality of the audio here
+            has_quality = self.audio_manager_instance.has_speech_quality(file_name)
+            
+            if not has_quality:
+                print(f"Audio does not have enough quality. Discarted from {start} to {end} of {enhanced_audio_file_path}")
+                os.remove(file_name)
+                continue
+            
+            gender = self.get_gender(segmentation)
+
+            segment["audio_file"]   = file_name
+            segment["gender"]       = gender
+            segment["duration"]     = duration
+            
+            valid_segments.append(segment)
+            
+        transcription["segments"] = valid_segments
+        
+        return transcription
+    
+    def process(self, path_to_audio_file, output_directory, range_start, range_end, filter_types, collection):    
         
         # STEPS        
         # check the audio quality of the whole file
@@ -188,89 +368,21 @@ class dataset_generator:
         if not os.path.exists(path_to_audio_file):
             raise Exception(f"File {path_to_audio_file} does not exist")
 
-        print("enhance audio")
         enhanced_audio_file_path = self.audio_manager_instance.process(path_to_audio_file, output_directory, filter_types)
-        
-        print("enhanced_audio_file_path", enhanced_audio_file_path)
         
         torch.cuda.empty_cache()
         gc.collect()        
         if not enhanced_audio_file_path:
             return
         
-        #TODO
-        #client = chromadb.Client()
-        #collection = client.get_or_create_collection(name="audios")
-        #collection.peek() # returns a list of the first 10 items in the collection
-        #collection.count() # returns the number of items in the collection
-        collection = None
+        transcription, language = self.get_transcription(enhanced_audio_file_path)
         
-        device = get_device()
-        batch_size = 16 # reduce if low on GPU mem
-        #compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
-        compute_type="int8"
-
-        # 1. Transcribe with original whisper (batched)
-        model = whisperx.load_model("large-v3", device, compute_type=compute_type)
-
-        audio = whisperx.load_audio(enhanced_audio_file_path)
-        result = model.transcribe(audio, batch_size=batch_size)
-
-        language = result["language"]
+        transcription = self.filter_transcription_segments_and_assign_values(transcription, range_start, range_end, enhanced_audio_file_path)
         
-        model_a, metadata = whisperx.load_align_model(language_code=language, device=device)
-        result = whisperx.align(result["segments"], model_a, metadata, audio, device, return_char_alignments=False)
-        
-        del model; gc.collect(); torch.cuda.empty_cache()
-        
-        #TODO
-        #diarize_model = whisperx.DiarizationPipeline(model_name='pyannote/speaker-diarization@2.1', use_auth_token=HF_TOKEN, device=device)
-        ## TO GET THE NUMBER OF SPEAKERS
-        #diarize_segments = diarize_model(audio)
-        #print("diarize_segments")
-        #print(diarize_segments)
-        
-        model = Model.from_pretrained("pyannote/embedding", use_auth_token=HF_TOKEN)
+        transcription = self.assign_name_to_each_speaker(transcription, collection)
 
-        audio_embeddings_infencer = Inference(model, window="whole")
+        self.write_data_to_csv(transcription, self.csv_file_name, language)
         
-        seg = Segmenter()
-        
-        speakers_list = []
-
-        for segment in result["segments"]:
-            start = segment["start"]
-            end = segment["end"]
-
-            duration = segment["end"] - segment["start"]
-            
-            if duration < range_start or duration > range_end:
-                print("current duration:", duration)
-                print("text:", segment["text"])
-                continue
-            
-            file_name = self.create_audio_segment(start, end, enhanced_audio_file_path)
-            
-            segmentation = seg(file_name)
-            has_music = self.audio_manager_instance.has_music(segmentation)
-
-            if has_music:
-                print(f"Audio has music. Discarted from {start} to {end} of {enhanced_audio_file_path}")
-                continue
-            
-            #Verify the quality of the audio here
-            has_quality = self.audio_manager_instance.has_speech_quality(file_name)
-            
-            if not has_quality:
-                print(f"Audio does not have enough quality. Discarted from {start} to {end} of {enhanced_audio_file_path}")
-                continue
-            
-            speaker_name = self.get_speaker_name(collection, audio_embeddings_infencer, file_name, speakers_list)
-                        
-            gender = self.get_gender(segmentation)
-            
-            self.write_data_to_csv(segment["text"], self.csv_file_name, speaker_name, gender, language, duration)
-    
 class audio_manager:
     
     def __init__(self):
@@ -392,7 +504,7 @@ class audio_manager:
         
         # Calculate chunk size based on duration
         chunk_size = int(sr * chunk_duration)
-
+        
         # Split the audio into chunks
         audio_chunks = self.split_audio_into_chunks(dwav.cpu().numpy(), chunk_size)
 
@@ -426,7 +538,7 @@ class audio_manager:
         u = Unsilence(path_to_audio_file)
         
         u.detect_silence()
-
+        
         #rewrite the file with no silences
         u.render_media(path_to_audio_file, audio_only=True)  # Audio only specified
         
@@ -444,16 +556,12 @@ class audio_manager:
             average_score = np.mean(scores_array)
 
             # Print the result
-            print(f"Average {metric_name} score: {average_score}")
+            #print(f"Average {metric_name} score: {average_score}")
             
             average_scores[metric_name] = average_score
             
         if average_scores['mosnet'] >= 3:
             return True
-
-        del self.metrics
-        torch.cuda.empty_cache()
-        gc.collect()
 
         return False
     
@@ -473,14 +581,64 @@ def parse_range(value):
     except ValueError:
         raise argparse.ArgumentTypeError("Invalid range format. Please use 'start-end'.")
 
+def get_local_audio_files(input_folder):
+    all_files = os.listdir(input_folder)
+    return [os.path.join(input_folder, file) for file in all_files if file.lower().endswith(('.mp3', '.wav', '.flac', '.ogg', '.aac', '.wma'))]
+
+def get_youtube_audio_files(urls, output_directory):
+    
+    downloaded_files = []
+    if not urls:
+        return downloaded_files
+    
+    youtube_files_output_directory = os.path.join(output_directory, "youtube_files") 
+    
+    if not os.path.exists(youtube_files_output_directory):
+        os.makedirs(youtube_files_output_directory)
+        
+    audio_format = "wav"
+    
+    for url in urls:
+        output_template = os.path.join(youtube_files_output_directory, f"%(title)s.{audio_format}")
+            
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'extractaudio': True,
+            'audioformat': 'wav',
+            'outtmpl': output_template,
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+            
+    downloaded_files = [os.path.join(youtube_files_output_directory, file_name) for file_name in os.listdir(youtube_files_output_directory)]
+
+    return downloaded_files
+
+def process_audio_files(audio_files, output_directory, start, end, filter_types):
+    
+    client = chromadb.PersistentClient(path=os.path.join(output_directory, "chroma_database"))
+    collection = client.get_or_create_collection(name="speakers")
+
+    for audio_file in audio_files:
+        print("Processing:", audio_file)
+        dataset_generator().process(audio_file, output_directory, start, end, filter_types, collection)
+        
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='')
 
     # Define positional arguments
-    parser.add_argument('--input_file_path', type=str, help='Path to the input audio file.')
-    parser.add_argument('--input_folder', type=str, help='Path to the input folder containing audio files.')
-    parser.add_argument('--output_directory', type=str, help='Output directory for audio files.')
+    #parser.add_argument('--input_file_path', type=str, help='Path to the input audio file.')
+    #parser.add_argument('--input_folder', type=str, help='Path to the input folder containing audio files.')
+    
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--input_file_path', type=str, help='Path to the input audio file.')
+    group.add_argument('--input_folder', type=str, help='Path to the input folder containing audio files.')
+
+    parser.add_argument("--youtube_download", nargs="*", help="YouTube playlist or video URLs")
+
+    parser.add_argument("--output_directory", type=str, help="Output directory for audio files", default=".")
     parser.add_argument('--range_times', nargs='?', type=parse_range, default=(4, 10), help='Specify a range of two integers in the format "start-end". Default is 4-10.')
     parser.add_argument('--types', nargs='+', default=["deepfilternet"], help='List of types. Default is deepfilternet. You can combine filters too: --types deepfilternet enhance_audio_resembleai  . You can disable it with --types None')
 
@@ -488,28 +646,23 @@ if __name__ == "__main__":
     
     input_file_path     = args.input_file_path
     input_folder        = args.input_folder
+    youtube_download    = args.youtube_download
     output_directory    = args.output_directory
     start, end          = args.range_times
     filter_types        = args.types
 
-    if input_folder and input_file_path:
-        raise Exception("You must choose either a file or a folder, not both.")
-    
+    youtube_audio_files = get_youtube_audio_files(youtube_download, output_directory)
+
     if input_folder:
-        all_files = os.listdir(input_folder)
         
-        audio_files = [file for file in all_files if file.lower().endswith(('.mp3', '.wav', '.flac', '.ogg', '.aac', '.wma'))]
-
-        for audio_file in audio_files:
-            
-            print("Processing:", audio_file)
-            
-            current_input_file_path = os.path.join(input_folder, audio_file)
-            
-            dataset_generator().process(current_input_file_path, output_directory, start, end, filter_types)
-
-            print("Full Path:", current_input_file_path)
-
+        local_audio_files = get_local_audio_files(input_folder)
+        audio_files = local_audio_files + youtube_audio_files
+        process_audio_files(audio_files, output_directory, start, end, filter_types)
+        
     elif input_file_path:
-
-        dataset_generator().process(input_file_path, output_directory, start, end, filter_types)
+        
+        audio_files = [input_file_path] + youtube_audio_files
+        process_audio_files(audio_files, output_directory, start, end, filter_types)
+    else:
+        
+        process_audio_files(youtube_audio_files, output_directory, start, end, filter_types)
