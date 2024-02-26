@@ -5,7 +5,7 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 ## Here are the key functionalities of the project:
 
-1. **Dataset Generation:** The project allows for the creation of datasets with Mean Opinion Score (MOS).
+1. **Dataset Generation:** Creation of datasets with Mean Opinion Score (MOS).
 
 2. **Silence Removal:** It includes a feature to remove silences from audio files, enhancing the overall quality.
 
