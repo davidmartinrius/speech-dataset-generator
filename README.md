@@ -64,7 +64,12 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
+or
+
+pip install -e .
+
 ```
+
 
 ### Needed agreement to run the code
 
