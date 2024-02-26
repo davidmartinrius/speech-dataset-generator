@@ -1,11 +1,13 @@
 # Speech Dataset Generator by [David Martin Rius](https://github.com/davidmartinrius/speech-dataset-generator)
 
+[![00019-2780374442](https://github.com/davidmartinrius/speech-dataset-generator/assets/16558194/8091ba96-6017-4645-b001-a9e3310982e8)](https://github.com/davidmartinrius/speech-dataset-generator)
+
 This repository is dedicated to creating datasets suitable for training text-to-speech or speech-to-text models. The primary functionality involves transcribing audio files, enhancing audio quality when necessary, and generating datasets.
 
 
 ## Here are the key functionalities of the project:
 
-1. **Dataset Generation:** The project allows for the creation of datasets with Mean Opinion Score (MOS).
+1. **Dataset Generation:** Creation of datasets with Mean Opinion Score (MOS).
 
 2. **Silence Removal:** It includes a feature to remove silences from audio files, enhancing the overall quality.
 
@@ -136,13 +138,13 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 
 - [X] **Store speaker embeddings in Chroma vector database**
 
+## Refactor code
+
+- [X] Everything is inside main.py The code needs to be reorganized.
+
 ## Speech rate 
 
 - [ ] **Detect the speech speed rate for each sentence and add it to the csv output file.**
-
-## Refactor code
-
-- [ ] Everything is inside main.py The code needs to be reorganized.
 
 ## Support multiple dataset types
 Generator of multiple types of datasets
@@ -177,7 +179,7 @@ I have to look for a way to extract all the needed features for each dataset typ
 
 ## Docker image
 
-- [ ] **Create a dockable image for ease of use.**
+- [ ] **Create a docker image for ease of use.**
 
 ## Used packages in this project
 This project uses several open-source libraries and tools for audio processing. Special thanks to the contributors of these projects.
