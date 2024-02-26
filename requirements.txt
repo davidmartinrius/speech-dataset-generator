@@ -7,5 +7,5 @@ git+https://github.com/davidmartinrius/unsilence.git
 deepfilternet
 git+https://github.com/davidmartinrius/resemble-enhance.git
 git+https://github.com/aliutkus/speechmetrics#egg=speechmetrics
-yt-dlp==2023.12.30
+yt-dlp
 chromadb==0.4.23
