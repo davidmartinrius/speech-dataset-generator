@@ -1,6 +1,6 @@
-[![00019-2780374442](https://github.com/davidmartinrius/speech-dataset-generator/assets/16558194/8091ba96-6017-4645-b001-a9e3310982e8)](https://github.com/davidmartinrius/speech-dataset-generator)
-
 # Speech Dataset Generator by [David Martin Rius](https://github.com/davidmartinrius/speech-dataset-generator)
+
+[![00019-2780374442](https://github.com/davidmartinrius/speech-dataset-generator/assets/16558194/8091ba96-6017-4645-b001-a9e3310982e8)](https://github.com/davidmartinrius/speech-dataset-generator)
 
 This repository is dedicated to creating datasets suitable for training text-to-speech or speech-to-text models. The primary functionality involves transcribing audio files, enhancing audio quality when necessary, and generating datasets.
 
