@@ -206,8 +206,10 @@ This project uses several open-source libraries and tools for audio processing. 
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
+- [Chroma](https://github.com/chroma-core/chroma)
+
 ## License
 
-If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, yt-dlp has no license and all others are under the MIT license.
+If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, yt-dlp has no license and all others are under the MIT license or Apache 2.0 license.
 
 This project is licensed under the [MIT License](LICENSE).
