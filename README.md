@@ -140,6 +140,10 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 
 - [ ] **Detect the speech speed rate for each sentence and add it to the csv output file.**
 
+## Refactor code
+
+- [ ] Everything is inside main.py The code needs to be reorganized.
+
 ## Support multiple dataset types
 Generator of multiple types of datasets
 
