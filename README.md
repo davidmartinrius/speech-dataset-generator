@@ -80,11 +80,11 @@ HF_TOKEN=yourtoken
 
 ## Usage
 
-The main script `main.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of filters. You can process a single file or an entire folder of audio files.
+The main script `speech_dataset_generator/main.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of filters. You can process a single file or an entire folder of audio files.
 
 ```bash
 
-python main.py --input_file_path <path_to_audio_file> --output_directory <output_directory> --range_times <start-end> --types <filter_types>
+python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> --output_directory <output_directory> --range_times <start-end> --types <filter_types>
 
 ```
 
@@ -104,19 +104,19 @@ python main.py --input_file_path <path_to_audio_file> --output_directory <output
 
 ```bash
 
-python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types deepfilternet enhance_audio_resembleai
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types deepfilternet enhance_audio_resembleai
 
-python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types None
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types None
 
-python main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types enhance_audio_resembleai
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types enhance_audio_resembleai
 
-python main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --types deepfilternet 
+python speech_dataset_generator/main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --types deepfilternet 
 
-python main.py --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
 
-python main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
 
-python main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
 
 ```
 
