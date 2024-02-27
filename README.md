@@ -109,11 +109,13 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 ```bash
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types deepfilternet enhance_audio_resembleai
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types deepfilternet
 
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types None
 
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types enhance_audio_resembleai
+
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types deepfilternet enhance_audio_resembleai
 
 python speech_dataset_generator/main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --types deepfilternet 
 
