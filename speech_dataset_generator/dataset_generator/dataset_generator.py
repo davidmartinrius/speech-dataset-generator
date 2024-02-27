@@ -276,7 +276,8 @@ class DatasetGenerator:
             segment["generated_speaker_name"] = existing_speaker["generated_speaker_name"]
         
         return transcription
-        
+
+    # This method adds new values such as audio_file, gender and duration  to each segment
     def filter_transcription_segments_and_assign_values(self, transcription, range_start, range_end, enhanced_audio_file_path):
        
         seg = Segmenter()
