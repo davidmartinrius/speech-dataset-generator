@@ -31,8 +31,8 @@ if __name__ == "__main__":
     start, end          = args.range_times
     filter_types        = args.types
 
-    if not input_file_path and not input_folder:
-        raise Exception("input_file_path or input_folder is required")
+    if not input_file_path and not input_folder and not youtube_download:
+        raise Exception("At least 1 input is needed: --input_file_path or --input_folder or --youtube_download")
     
     youtube_audio_files = get_youtube_audio_files(youtube_download, output_directory)
 
