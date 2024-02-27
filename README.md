@@ -129,9 +129,22 @@ python speech_dataset_generator/main.py --youtube_download https://www.youtube.c
 
 ## Notes
 
+### Audio enhancer argument
+You can combine --types. This is the audio enhancer. There is available "deepfilternet", "resembleai" and soon "mayavoz".
+
+If you pass multiples those will be executed in the order that are passed. In the case you pass None no audio enhancer will be used.
+
+The output sound of resembleai sometimes can be a little distorted. So, it is not always a good choise. 
+
+By default, deepfilternet is used.
+
+### The audio is not always 100% used to be splitted into files
+
 An input audio may not be used completely. Here some reasons:
 - The range_times do not fit a transcripted segment.
 - The segment has music or not enough quality (MOS under 3), even when enhanced.
+
+### Gender detection
 
 The gender detection is not accurate enough when probably mixed. I mean there is no clear gender but maybe it reurns male.
 
