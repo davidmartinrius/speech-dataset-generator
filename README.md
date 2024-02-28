@@ -46,14 +46,14 @@ Consider that the values provided are purely fictitious and intended solely for 
 
 ```plaintext
 
-| text                          | audio_filename               | speaker_id     | gender     | duration    | language    | words_per_minute   | syllables_per_minute |
+| text                    | audio_filename               | speaker_id     | gender     | duration    | language    | words_per_minute   | syllables_per_minute |
 |-------------------------------|------------------------------|----------------|------------|-------------|-------------|--------------------|----------------------|
-| Hello, how are you?           | wavs/1272-128104-0000.wav    | Speaker12      | male       | 4.5         | en          | 22.22              | 1.11                 |
-| Hola, ¿cómo estás?            | wavs/1272-128104-0001.wav    | Speaker45      | female     | 6.2         | es          | 20.97              | 0.81                 |
-| This is a test.               | wavs/1272-128104-0002.wav    | Speaker23      | male       | 3.8         | en          | 26.32              | 1.32                 |
-| ¡Adiós!                       | wavs/1272-128104-0003.wav    | Speaker67      | female     | 7.0         | es          | 16.43              | 0.57                 |
-| ...                           | ...                          | ...            | ...        | ...         | ...         | ...                | ...                  |
-| Goodbye!                      | wavs/1272-128104-0225.wav    | Speaker78      | male       | 5.1         | en          | 1.41               | 1.18                 |
+| Hello, how are you?     | wavs/1272-128104-0000.wav    | Speaker12      | male       | 4.5         | en          | 22.22              | 1.11                 |
+| Hola, ¿cómo estás?      | wavs/1272-128104-0001.wav    | Speaker45      | female     | 6.2         | es          | 20.97              | 0.81                 |
+| This is a test.         | wavs/1272-128104-0002.wav    | Speaker23      | male       | 3.8         | en          | 26.32              | 1.32                 |
+| ¡Adiós!                 | wavs/1272-128104-0003.wav    | Speaker67      | female     | 7.0         | es          | 16.43              | 0.57                 |
+| ...                     | ...                          | ...            | ...        | ...         | ...         | ...                | ...                  |
+| Goodbye!                | wavs/1272-128104-0225.wav    | Speaker78      | male       | 5.1         | en          | 1.41               | 1.18                 |
 
 ```
 ## Installation
@@ -90,6 +90,7 @@ HF_TOKEN=yourtoken
 ## Usage
 
 The main script `speech_dataset_generator/main.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of enhancers. You can process a single file or an entire folder of audio files.
+Also you can use a youtube video or a youtube playlist as input.
 
 ```bash
 
@@ -101,7 +102,7 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--input_folder`: (required) Path to the input folder containing audio files. Cannot be used with input_file_path
 
-- `--youtube_download`: (optional)Link or links separated by space of youtube videos or playlists. Can be combined with --input_file_path or --input_folder
+- `--youtube_download`: (optional) Link or links separated by space of youtube videos or playlists. Can be combined with --input_file_path or --input_folder
 
 - `--output_directory`: Output directory for audio files.
 
@@ -149,6 +150,8 @@ You can play with those and combine them.
 An input audio may not be used completely. Here some reasons:
 - The range_times do not fit a transcripted segment.
 - The segment has music or not enough quality (MOS under 3), even when enhanced.
+
+If you are not using enhancers and the segments are being discarted because of bad quality you can try --enhancers argument with deepfilternet, resembleai or both together.
 
 ### Gender detection
 
