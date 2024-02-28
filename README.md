@@ -155,7 +155,7 @@ If you are not using enhancers and the segments are being discarted because of b
 
 ### Gender detection
 
-The gender detection is not accurate enough when probably mixed. I mean there is no clear gender but maybe it reurns male.
+The gender detection is not accurate enough when probably mixed. If there is no clear gender due the voice, maybe return male or female at random.
 
 # Next Steps
 
