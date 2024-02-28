@@ -37,7 +37,7 @@ output
 |   |-- 1272-128104-0001.wav
 |   |-- ...
 |   |-- 1272-128104-0225.wav
-|-- dataset.csv
+|-- metadata.csv
 ```
 
 ### Example of the csv content:
@@ -176,7 +176,7 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 
 Generator of multiple types of datasets:
 
-- [X] **LJSpeech** This is the default one. When you generate a new dataset a LJSpeech format is given. It still does not split by train/dev/test.
+- [X] **LJSpeech** This is the default one. When you generate a new dataset a LJSpeech format is given. It still does not split by train/dev/test, but creates a metadata.csv
     
 - [ ] **LibriSpeech**
 
