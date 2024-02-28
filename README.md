@@ -46,7 +46,7 @@ Consider that the values provided are purely fictitious and intended solely for 
 
 ```plaintext
 
-| speaker_name                  | audio_filename               | speaker_id     | gender     | duration    | language    | words_per_minute   | syllables_per_minute |
+| text                          | audio_filename               | speaker_id     | gender     | duration    | language    | words_per_minute   | syllables_per_minute |
 |-------------------------------|------------------------------|----------------|------------|-------------|-------------|--------------------|----------------------|
 | Hello, how are you?           | wavs/1272-128104-0000.wav    | Speaker12      | male       | 4.5         | en          | 22.22              | 1.11                 |
 | Hola, ¿cómo estás?            | wavs/1272-128104-0001.wav    | Speaker45      | female     | 6.2         | es          | 20.97              | 0.81                 |
