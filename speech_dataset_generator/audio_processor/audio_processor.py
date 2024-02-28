@@ -39,7 +39,7 @@ def get_youtube_audio_files(urls, output_directory):
 
     return downloaded_files
 
-def process_audio_files(audio_files, output_directory, start, end, filter_types):
+def process_audio_files(audio_files, output_directory, start, end, enhancers):
     
     dataset_generator = DatasetGenerator()
     
@@ -48,4 +48,4 @@ def process_audio_files(audio_files, output_directory, start, end, filter_types)
 
     for audio_file in audio_files:
         print("Processing:", audio_file)
-        dataset_generator.process(audio_file, output_directory, start, end, filter_types, collection)
+        dataset_generator.process(audio_file, output_directory, start, end, enhancers, collection)

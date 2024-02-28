@@ -19,7 +19,10 @@ setup(
         'speechmetrics @ git+https://github.com/aliutkus/speechmetrics#egg=speechmetrics',
         'youtube-dl==2021.12.17',
         'yt-dlp',
-        'chromadb==0.4.23'
+        'chromadb==0.4.23',
+        'pyphen==0.14.0',
+        'pypinyin==0.50.0',
+        'konlpy==0.6.0'
     ],
     entry_points={
         'console_scripts': [

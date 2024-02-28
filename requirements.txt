@@ -9,3 +9,6 @@ git+https://github.com/davidmartinrius/resemble-enhance.git
 git+https://github.com/aliutkus/speechmetrics#egg=speechmetrics
 yt-dlp
 chromadb==0.4.23
+pyphen==0.14.0
+pypinyin==0.50.0
+konlpy==0.6.0
