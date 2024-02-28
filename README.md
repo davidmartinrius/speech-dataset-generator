@@ -206,6 +206,17 @@ I have to look for a way to extract all the needed features for each dataset typ
 
 - [ ] **Create a docker image for ease of use.**
 
+## Runpod serverless instance
+
+In case you do not have a gpu or you want to distribute this as a service.
+
+runpod is a cloud GPU on demand. It has a good integration with python and docker. Also it has an affordable pricing.
+
+- [ ] Explain how to create a storage in runpod
+- [ ] Create a base installation to the storage with a Pod
+- [ ] Launch a serverless instance with a Docker instance of this project
+- [ ] Call the serverless custom API endpoints to upload files, download generated datasets, convert datasets to other types of datasets, etc
+
 ## Used packages in this project
 This project uses several open-source libraries and tools for audio processing. Special thanks to the contributors of these projects.
 
