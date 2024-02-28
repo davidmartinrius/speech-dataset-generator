@@ -107,7 +107,7 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--range_times`: Specify a range of two integers in the format "start-end". Default is 4-10.
 
-- `--enhancers`: List of enhancers. Default is deepfilternet. You can combine filters too, and disable with `--enhancers None`.
+- `--enhancers`: You use audio enhancers: --enhancers deepfilternet resembleai. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
 
 **Examples:**
 
@@ -115,7 +115,7 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers None
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10
 
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers resembleai
 
