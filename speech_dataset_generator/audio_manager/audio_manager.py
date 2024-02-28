@@ -21,11 +21,11 @@ class AudioManager:
         window_length = 30 # seconds
         self.metrics = speechmetrics.load('absolute', window_length)
         
-    def process(self, input_audio, output_directory, filter_types):
+    def process(self, input_audio, output_directory, enhancers):
         
-        if "None" not in filter_types:
+        if "None" not in enhancers:
             output_audio_file = self.get_output_file_name(input_audio, output_directory)
-            self.enhance_audio(input_audio, output_audio_file, filter_types)
+            self.enhance_audio(input_audio, output_audio_file, enhancers)
         else:
             output_audio_file = input_audio
         
@@ -52,14 +52,14 @@ class AudioManager:
     #alternatives to deepfilternet 
     #https://github.com/resemble-ai/resemble-enhance
     #https://github.com/shahules786/mayavoz 
-    def enhance_audio(self, noisy_audio, output_audio_file, types=["deepfilternet"]):
+    def enhance_audio(self, noisy_audio, output_audio_file, enhancers=["deepfilternet"]):
             
         temp_output = noisy_audio  # Initial audio loading
 
-        for enhancement_type in types:
+        for enhancement_type in enhancers:
             if enhancement_type == "deepfilternet":
                 temp_output = self.enhance_audio_deepfilternet(temp_output, output_audio_file)
-            elif enhancement_type == "enhance_audio_resembleai":
+            elif enhancement_type == "resembleai":
                 temp_output = self.enhance_audio_resembleai(temp_output, output_audio_file)
             elif enhancement_type == "mayavoz":
                 temp_output = self.enhance_audio_mayavoz(temp_output, output_audio_file)

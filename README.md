@@ -27,6 +27,8 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 10. **Store speaker embeddings:** The speakers are detected and stored in a Chroma database, so you do not need to assign a speaker name.
 
+11. **Syllabic and words-per-minute metrics**
+
 ### Example of the ouput folder:
 ```plaintext
 output
@@ -40,16 +42,18 @@ output
 
 ### Example of the csv content:
 
+Consider that the values provided are purely fictitious and intended solely for illustrative purposes in this example.
+
 ```plaintext
 
-|   text                        |   audio_file                |   speaker_name  |   gender   |   duration   |   language   |
-|-------------------------------|-----------------------------|-----------------|------------|--------------|--------------|
-|   Hello, how are you?         |   wavs/1272-128104-0000.wav |   Speaker12     |   male     |   4.5        |   en         |
-|   Hola, ¿cómo estás?          |   wavs/1272-128104-0001.wav |   Speaker45     |   female   |   6.2        |   es         |
-|   This is a test.             |   wavs/1272-128104-0002.wav |   Speaker23     |   male     |   3.8        |   en         |
-|   ¡Adiós!                     |   wavs/1272-128104-0003.wav |   Speaker67     |   female   |   7.0        |   es         |
-|   ...                         |   ...                       |   ...           |   ...      |   ...        |   ...        |
-|   Goodbye!                    |   wavs/1272-128104-0225.wav |   Speaker78     |   male     |   5.1        |   en         |
+| speaker_name                  | audio_filename               | speaker_id     | gender     | duration    | language    | words_per_minute   | syllables_per_minute |
+|-------------------------------|------------------------------|----------------|------------|-------------|-------------|--------------------|----------------------|
+| Hello, how are you?           | wavs/1272-128104-0000.wav    | Speaker12      | male       | 4.5         | en          | 22.22              | 1.11                 |
+| Hola, ¿cómo estás?            | wavs/1272-128104-0001.wav    | Speaker45      | female     | 6.2         | es          | 20.97              | 0.81                 |
+| This is a test.               | wavs/1272-128104-0002.wav    | Speaker23      | male       | 3.8         | en          | 26.32              | 1.32                 |
+| ¡Adiós!                       | wavs/1272-128104-0003.wav    | Speaker67      | female     | 7.0         | es          | 16.43              | 0.57                 |
+| ...                           | ...                          | ...            | ...        | ...         | ...         | ...                | ...                  |
+| Goodbye!                      | wavs/1272-128104-0225.wav    | Speaker78      | male       | 5.1         | en          | 1.41               | 1.18                 |
 
 ```
 ## Installation
@@ -85,11 +89,11 @@ HF_TOKEN=yourtoken
 
 ## Usage
 
-The main script `speech_dataset_generator/main.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of filters. You can process a single file or an entire folder of audio files.
+The main script `speech_dataset_generator/main.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of enhancers. You can process a single file or an entire folder of audio files.
 
 ```bash
 
-python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> --output_directory <output_directory> --range_times <start-end> --types <filter_types>
+python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> --output_directory <output_directory> --range_times <start-end> --enhancers <enhancer_types>
 
 ```
 
@@ -103,40 +107,42 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--range_times`: Specify a range of two integers in the format "start-end". Default is 4-10.
 
-- `--types`: List of types. Default is deepfilternet. You can combine filters too, and disable with `--types None`.
+- `--enhancers`: List of enhancers. Default is deepfilternet. You can combine filters too, and disable with `--enhancers None`.
 
 **Examples:**
 
 ```bash
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types deepfilternet
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types None
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers None
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types enhance_audio_resembleai
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers resembleai
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --types deepfilternet enhance_audio_resembleai
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet resembleai
 
-python speech_dataset_generator/main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --types deepfilternet 
+python speech_dataset_generator/main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet 
 
-python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
 
-python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
 
-python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --types deepfilternet enhance_resembleai
+python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
 
 ```
 
 ## Notes
 
 ### Audio enhancer argument
-You can combine --types. This is the audio enhancer. There is available "deepfilternet", "resembleai" and soon "mayavoz".
+You can combine --enhancers. There are available "deepfilternet", "resembleai" and soon "mayavoz".
 
-If you pass multiples those will be executed in the order that are passed. In the case you pass None no audio enhancer will be used.
+If you pass multiples those will be executed in the order that are passed. In the case you don't pass enhancers no enhancer will be used.
 
-The output sound of resembleai sometimes can be a little distorted. So, it is not always a good choise. 
+By default, no enhancer is used. I suggest using deepfilternet for noisy audios.
 
-By default, deepfilternet is used.
+The output sound of resembleai sometimes can be a little distorted. So, it is not always a good choise.
+
+You can play with those and combine them.
 
 ### The audio is not always 100% used to be splitted into files
 
@@ -164,7 +170,7 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 
 ## Speech rate 
 
-- [ ] **Detect the speech speed rate for each sentence and add it to the csv output file.**
+- [X] Detect the speech speed rate for each sentence and add it to the csv output file. The metrics are words per minute (wpm) and syllables per minute (spm)
 
 ## Support multiple datasets
 

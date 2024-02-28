@@ -20,6 +20,7 @@ from scipy.spatial.distance import cdist
 
 from speech_dataset_generator.audio_manager.audio_manager import AudioManager
 from speech_dataset_generator.utils.utils import get_device
+from speech_dataset_generator.speech_rate.speech_rate import SpeechRate
 
 load_dotenv()
 
@@ -59,12 +60,14 @@ class DatasetGenerator:
         for segment in transcription["segments"]:
             
             newData = {
-                'text': segment["text"],
-                'audio_file': segment["audio_file"],
-                'speaker': segment["generated_speaker_name"],
-                'gender': segment["gender"],
-                'duration': segment["duration"],
-                'language': language
+                'text':                     segment["text"],
+                'audio_file':               segment["audio_file"],
+                'speaker':                  segment["generated_speaker_name"],
+                'gender':                   segment["gender"],
+                'duration':                 segment["duration"],
+                'language':                 language,
+                'syllables_per_minute':     segment["syllables_per_minute"],
+                'words_per_minute':         segment["words_per_minute"],
             }
 
             with open(csv_file_name, 'a', encoding='utf-8') as csvFile:
@@ -205,7 +208,6 @@ class DatasetGenerator:
             
             current_speaker = None
             current_words = []
-            duration = segment["end"] - segment["start"]
 
             # Iterate over each word in the segment
             for word in segment["words"]:
@@ -243,6 +245,23 @@ class DatasetGenerator:
         del diarize_segments
         
         return result, language
+    
+    def add_wpm_spm_to_each_segment(self, transcription, language):
+        
+        speech_rate_instance = SpeechRate()
+        for segment in transcription["segments"]:
+            
+            duration = segment['duration']
+            
+            word_list = [word_info['word'] for word_info in segment['words']]
+            
+            syllables_per_minute = speech_rate_instance.get_syllables_per_minute(word_list, language, duration)
+            words_per_minute     = speech_rate_instance.get_words_per_minute(word_list, duration)
+
+            segment['syllables_per_minute'] = syllables_per_minute
+            segment['words_per_minute'] = words_per_minute
+            
+        return transcription
         
     def assign_name_to_each_speaker(self, transcription, collection):
         
@@ -321,7 +340,7 @@ class DatasetGenerator:
         
         return transcription
     
-    def process(self, path_to_audio_file, output_directory, range_start, range_end, filter_types, collection):    
+    def process(self, path_to_audio_file, output_directory, range_start, range_end, enhancers, collection):    
         
         # STEPS        
         # check the audio quality of the whole file
@@ -343,7 +362,7 @@ class DatasetGenerator:
         if not os.path.exists(path_to_audio_file):
             raise Exception(f"File {path_to_audio_file} does not exist")
 
-        enhanced_audio_file_path = self.audio_manager_instance.process(path_to_audio_file, output_directory, filter_types)
+        enhanced_audio_file_path = self.audio_manager_instance.process(path_to_audio_file, output_directory, enhancers)
         
         torch.cuda.empty_cache()
         gc.collect()        
@@ -353,6 +372,9 @@ class DatasetGenerator:
         transcription, language = self.get_transcription(enhanced_audio_file_path)
         
         transcription = self.filter_transcription_segments_and_assign_values(transcription, range_start, range_end, enhanced_audio_file_path)
+
+        # words_per_minute and syllables_per_minute
+        transcription = self.add_wpm_spm_to_each_segment(transcription, language)
         
         transcription = self.assign_name_to_each_speaker(transcription, collection)
 
