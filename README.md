@@ -176,9 +176,9 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 
 Generator of multiple types of datasets:
 
+- [X] **LJSpeech** This is the default one. When you generate a new dataset a LJSpeech format is given. It still does not split by train/dev/test.
+    
 - [ ] **LibriSpeech**
-
-- [ ] **LJSpeech**
 
 - [ ] **Common Voice 11**
 
