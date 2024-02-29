@@ -37,7 +37,7 @@ output
 |   |-- 1272-128104-0001.wav
 |   |-- ...
 |   |-- 1272-128104-0225.wav
-|-- dataset.csv
+|-- metadata.csv
 ```
 
 ### Example of the csv content:
@@ -46,14 +46,14 @@ Consider that the values provided are purely fictitious and intended solely for 
 
 ```plaintext
 
-| speaker_name                  | audio_filename               | speaker_id     | gender     | duration    | language    | words_per_minute   | syllables_per_minute |
-|-------------------------------|------------------------------|----------------|------------|-------------|-------------|--------------------|----------------------|
-| Hello, how are you?           | wavs/1272-128104-0000.wav    | Speaker12      | male       | 4.5         | en          | 22.22              | 1.11                 |
-| Hola, ¿cómo estás?            | wavs/1272-128104-0001.wav    | Speaker45      | female     | 6.2         | es          | 20.97              | 0.81                 |
-| This is a test.               | wavs/1272-128104-0002.wav    | Speaker23      | male       | 3.8         | en          | 26.32              | 1.32                 |
-| ¡Adiós!                       | wavs/1272-128104-0003.wav    | Speaker67      | female     | 7.0         | es          | 16.43              | 0.57                 |
-| ...                           | ...                          | ...            | ...        | ...         | ...         | ...                | ...                  |
-| Goodbye!                      | wavs/1272-128104-0225.wav    | Speaker78      | male       | 5.1         | en          | 1.41               | 1.18                 |
+| text                    | audio_filename               | speaker_id     | gender     | duration    | language    | words_per_minute   | syllables_per_minute |
+|-------------------------|------------------------------|----------------|------------|-------------|-------------|--------------------|----------------------|
+| Hello, how are you?     | wavs/1272-128104-0000.wav    | Speaker12      | male       | 4.5         | en          | 22.22              | 1.11                 |
+| Hola, ¿cómo estás?      | wavs/1272-128104-0001.wav    | Speaker45      | female     | 6.2         | es          | 20.97              | 0.81                 |
+| This is a test.         | wavs/1272-128104-0002.wav    | Speaker23      | male       | 3.8         | en          | 26.32              | 1.32                 |
+| ¡Adiós!                 | wavs/1272-128104-0003.wav    | Speaker67      | female     | 7.0         | es          | 16.43              | 0.57                 |
+| ...                     | ...                          | ...            | ...        | ...         | ...         | ...                | ...                  |
+| Goodbye!                | wavs/1272-128104-0225.wav    | Speaker78      | male       | 5.1         | en          | 1.41               | 1.18                 |
 
 ```
 ## Installation
@@ -90,6 +90,7 @@ HF_TOKEN=yourtoken
 ## Usage
 
 The main script `speech_dataset_generator/main.py` accepts command-line arguments for specifying the input file, output directory, time range, and types of enhancers. You can process a single file or an entire folder of audio files.
+Also you can use a youtube video or a youtube playlist as input.
 
 ```bash
 
@@ -101,13 +102,13 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--input_folder`: (required) Path to the input folder containing audio files. Cannot be used with input_file_path
 
-- `--youtube_download`: (optional)Link or links separated by space of youtube videos or playlists. Can be combined with --input_file_path or --input_folder
+- `--youtube_download`: (optional) Link or links separated by space of youtube videos or playlists. Can be combined with --input_file_path or --input_folder
 
 - `--output_directory`: Output directory for audio files.
 
 - `--range_times`: Specify a range of two integers in the format "start-end". Default is 4-10.
 
-- `--enhancers`: List of enhancers. Default is deepfilternet. You can combine filters too, and disable with `--enhancers None`.
+- `--enhancers`: You use audio enhancers: --enhancers deepfilternet resembleai. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
 
 **Examples:**
 
@@ -115,7 +116,7 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers None
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10
 
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers resembleai
 
@@ -150,9 +151,11 @@ An input audio may not be used completely. Here some reasons:
 - The range_times do not fit a transcripted segment.
 - The segment has music or not enough quality (MOS under 3), even when enhanced.
 
+If you are not using enhancers and the segments are being discarted because of bad quality you can try --enhancers argument with deepfilternet, resembleai or both together.
+
 ### Gender detection
 
-The gender detection is not accurate enough when probably mixed. I mean there is no clear gender but maybe it reurns male.
+The gender detection is not accurate enough when probably mixed. If there is no clear gender due the voice, maybe return male or female at random.
 
 # Next Steps
 
@@ -176,9 +179,9 @@ The gender detection is not accurate enough when probably mixed. I mean there is
 
 Generator of multiple types of datasets:
 
+- [X] **LJSpeech** This is the default one. When you generate a new dataset a LJSpeech format is given. It still does not split by train/dev/test, but creates a metadata.csv
+    
 - [ ] **LibriSpeech**
-
-- [ ] **LJSpeech**
 
 - [ ] **Common Voice 11**
 
