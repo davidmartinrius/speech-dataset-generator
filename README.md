@@ -7,7 +7,7 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 ## Here are the key functionalities of the project:
 
-1. **Dataset Generation:** Creation of datasets with Mean Opinion Score (MOS).
+1. **Dataset Generation:** Creation of [**multilingual**](#multilingual)  datasets with Mean Opinion Score (MOS).
 
 2. **Silence Removal:** It includes a feature to remove silences from audio files, enhancing the overall quality.
 
@@ -146,6 +146,10 @@ python speech_dataset_generator/main.py --youtube_download https://www.youtube.c
 ```
 
 ## Notes
+
+### <a name="multilingual">Multilingual:</a>
+
+This project uses Whisper, making it multilingual. [Here](https://github.com/openai/whisper?tab=readme-ov-file#available-models-and-languages) you can see the current supported language list.
 
 ### Audio enhancer argument
 You can combine --enhancers. There are available "deepfilternet", "resembleai" and "mayavoz".
