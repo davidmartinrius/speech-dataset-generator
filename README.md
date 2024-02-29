@@ -181,7 +181,7 @@ Generator of multiple types of datasets:
 
 - [X] **LJSpeech** This is the default one. When you generate a new dataset a LJSpeech format is given. It still does not split by train/dev/test, but creates a metadata.csv
     
-- [ ] **LibriSpeech**
+- [ ] **LibriSpeech** Currently in development. Work in progress
 
 - [ ] **Common Voice 11**
 
