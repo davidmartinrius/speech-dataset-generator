@@ -364,7 +364,7 @@ class DatasetGenerator:
         if not os.path.exists(self.wavs_directory):
             os.makedirs(self.wavs_directory, exist_ok=True)
 
-        csv_file_name = os.path.join(output_directory, "dataset.csv") 
+        csv_file_name = os.path.join(output_directory, "metadata.csv") 
         if not os.path.exists(path_to_audio_file):
             raise Exception(f"File {path_to_audio_file} does not exist")
 
