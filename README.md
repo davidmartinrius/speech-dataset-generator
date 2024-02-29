@@ -175,6 +175,10 @@ The gender detection is not accurate enough when probably mixed. If there is no 
 
 - [X] Detect the speech speed rate for each sentence and add it to the csv output file. The metrics are words per minute (wpm) and syllables per minute (spm)
 
+## Google colab
+
+- [X] Add a speech_dataset_generator_example.ipynb file with all available options applied to some noisy audios and good quality audios.
+  
 ## Support multiple datasets
 
 Generator of multiple types of datasets:
