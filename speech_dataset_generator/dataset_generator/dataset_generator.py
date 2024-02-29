@@ -21,6 +21,7 @@ from scipy.spatial.distance import cdist
 from speech_dataset_generator.audio_manager.audio_manager import AudioManager
 from speech_dataset_generator.utils.utils import get_device
 from speech_dataset_generator.speech_rate.speech_rate import SpeechRate
+import shutil
 
 load_dotenv()
 
@@ -263,7 +264,7 @@ class DatasetGenerator:
             
         return transcription
         
-    def assign_name_to_each_speaker(self, transcription, collection):
+    def get_existing_speakers(self, transcription, collection):
         
         existing_speakers = {}
 
@@ -274,10 +275,11 @@ class DatasetGenerator:
 
             if "speaker" not in existing_speakers or ("speaker" in existing_speakers and duration > existing_speakers[speaker]["end"] - existing_speakers[speaker]["start"]):
                 existing_speakers[speaker] = {
-                    "speaker": speaker,
-                    "audio_file": segment["audio_file"],
-                    "start": segment["start"],
-                    "end": segment["end"],
+                    "speaker":      speaker,
+                    "audio_file":   segment["audio_file"],
+                    "start":        segment["start"],
+                    "end":          segment["end"],
+                    "gender":       segment["gender"]
                 }
                 
         model = Model.from_pretrained("pyannote/embedding", use_auth_token=HF_TOKEN)
@@ -290,9 +292,13 @@ class DatasetGenerator:
             
             existing_speaker["generated_speaker_name"] = generated_speaker_name
         
+        return existing_speakers
+    
+    def assign_name_to_each_speaker(self, transcription, existing_speakers):
+        
         for segment in transcription["segments"]:
             
-            segment["generated_speaker_name"] = existing_speaker["generated_speaker_name"]
+            segment["generated_speaker_name"] = existing_speakers[segment["speaker"]]["generated_speaker_name"]
         
         return transcription
 
@@ -332,7 +338,7 @@ class DatasetGenerator:
 
             segment["audio_file"]   = file_name
             segment["gender"]       = gender
-            segment["duration"]     = duration
+            segment["duration"]     = round(duration, 3)
             
             valid_segments.append(segment)
             
@@ -340,7 +346,7 @@ class DatasetGenerator:
         
         return transcription
     
-    def process(self, path_to_audio_file, output_directory, range_start, range_end, enhancers, collection):    
+    def process(self, path_to_audio_file, output_directory, range_start, range_end, enhancers, collection, datasets):    
         
         # STEPS        
         # check the audio quality of the whole file
@@ -356,7 +362,7 @@ class DatasetGenerator:
         
         self.wavs_directory = os.path.join(output_directory, 'wavs')
         if not os.path.exists(self.wavs_directory):
-            os.makedirs(self.wavs_directory)
+            os.makedirs(self.wavs_directory, exist_ok=True)
 
         csv_file_name = os.path.join(output_directory, "dataset.csv") 
         if not os.path.exists(path_to_audio_file):
@@ -375,7 +381,61 @@ class DatasetGenerator:
 
         # words_per_minute and syllables_per_minute
         transcription = self.add_wpm_spm_to_each_segment(transcription, language)
+
+        existing_speakers = self.get_existing_speakers(transcription, collection)
         
-        transcription = self.assign_name_to_each_speaker(transcription, collection)
+        transcription = self.assign_name_to_each_speaker(transcription, existing_speakers)
 
         self.write_data_to_csv(transcription, csv_file_name, language)
+        
+    #Work in progress
+    def librispeech_dataset_generator(self, transcription, output_directory, path_to_audio_file, existing_speakers):
+    
+        librispeech_directory = os.path.join(output_directory, 'librispeech')
+        
+        #path is generated_speaker_name/audio_id/
+        #inside audio_id there is the transcription and the audio files
+        #the transcription.txt has
+        #generated_speaker_name-audio_id-number_of_audio transcription
+        
+        filename = os.path.basename(path_to_audio_file)
+
+        # Strip the file extension
+        filename_without_extension, _ = os.path.splitext(filename)
+
+        # Make it lowercase and remove non-alphabetic characters
+        cleaned_filename = ''.join(char.lower() for char in filename_without_extension if char.isalpha())
+
+        for existing_speaker in existing_speakers:
+            current_speaker_audio_directory = os.join.path(librispeech_directory, existing_speaker["generated_speaker_name"], cleaned_filename)
+            
+            os.makedirs(current_speaker_audio_directory, exist_ok=True)
+            
+        for segment in transcription["segments"]:
+            
+            current_speaker_audio_directory = os.join.path(librispeech_directory, segment["generated_speaker_name"], cleaned_filename)
+
+            speaker_id = segment["generated_speaker_name"]
+            book_id    = cleaned_filename
+            
+            file_extension = os.path.splitext(segment["audio_file"])[1]
+
+            max_number = -1
+            for filename in os.listdir(current_speaker_audio_directory):
+                if filename.startswith(f"{speaker_id}-{book_id}-") and not filename.lower().endswith('.txt'):
+                    current_number = int(filename.rsplit('-', 1)[1].rsplit('.', 1)[0])
+                    max_number = max(max_number, current_number)
+
+            new_number = max_number + 1
+
+            new_filename = f"{speaker_id}-{book_id}-{new_number}.{file_extension}" 
+            
+            new_full_path = os.join.path(current_speaker_audio_directory, new_filename)
+            
+            shutil.copy(segment["audio_file"], new_full_path)
+
+            new_file_data = f"{speaker_id}-{book_id}-{new_number}.{file_extension}" 
+
+            transcription_file_path = os.path.join(current_speaker_audio_directory, f"{speaker_id}-{book_id}.trans.txt")
+            with open(transcription_file_path, 'a') as transcription_file:
+                transcription_file.write(f"{new_file_data} {segment['text']}\n")

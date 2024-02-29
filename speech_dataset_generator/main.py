@@ -22,6 +22,9 @@ if __name__ == "__main__":
     parser.add_argument('--range_times', nargs='?', type=parse_range, default=(4, 10), help='Specify a range of two integers in the format "start-end". Default is 4-10.')
     parser.add_argument('--enhancers', nargs='+', default=[], help='You can combine enhancers too: --enhancers deepfilternet resembleai. Will be executed in the order you write it. By default no enhancer is enabled')
 
+    #work in progress
+    #parser.add_argument('--datasets', nargs='+', type=str, choices=['LJSpeech', 'LibriSpeech'], help='Specify the type of dataset (LJSpeech, LibriSpeech, or both). Required.')
+
     args = parser.parse_args()
     
     input_file_path     = args.input_file_path
@@ -30,6 +33,7 @@ if __name__ == "__main__":
     output_directory    = args.output_directory
     start, end          = args.range_times
     enhancers           = args.enhancers
+    datasets            = []#args.datasets
 
     if not input_file_path and not input_folder and not youtube_download:
         raise Exception("At least 1 input is needed: --input_file_path or --input_folder or --youtube_download")
@@ -39,9 +43,9 @@ if __name__ == "__main__":
     if input_folder:
         local_audio_files = get_local_audio_files(input_folder)
         audio_files = local_audio_files + get_youtube_audio_files(youtube_download, output_directory)
-        process_audio_files(audio_files, output_directory, start, end, enhancers)
+        process_audio_files(audio_files, output_directory, start, end, enhancers, datasets)
     elif input_file_path:
         audio_files = [input_file_path] + get_youtube_audio_files(youtube_download, output_directory)
-        process_audio_files(audio_files, output_directory, start, end, enhancers)
+        process_audio_files(audio_files, output_directory, start, end, enhancers, datasets)
     else:
-        process_audio_files(get_youtube_audio_files(youtube_download, output_directory), output_directory, start, end, enhancers)
+        process_audio_files(get_youtube_audio_files(youtube_download, output_directory), output_directory, start, end, enhancers, datasets)
