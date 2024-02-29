@@ -22,7 +22,8 @@ setup(
         'pyphen==0.14.0',
         'pypinyin==0.50.0',
         'konlpy==0.6.0',
-        'speechbrain==0.5.16'
+        'speechbrain==0.5.16',
+        'mayavoz @ https://github.com/davidmartinrius/mayavoz.git'
     ],
     entry_points={
         'console_scripts': [

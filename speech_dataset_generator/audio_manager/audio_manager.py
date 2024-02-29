@@ -12,6 +12,7 @@ from df.enhance import enhance, init_df, load_audio, save_audio
 import torchaudio
 from resemble_enhance.enhancer.inference import denoise, enhance as resemble_enhancer
 from scipy.io.wavfile import write
+from mayavoz.models import Mayamodel
 
 from speech_dataset_generator.utils.utils import get_device
 
@@ -23,7 +24,7 @@ class AudioManager:
         
     def process(self, input_audio, output_directory, enhancers):
         
-        if "None" not in enhancers:
+        if enhancers:
             output_audio_file = self.get_output_file_name(input_audio, output_directory)
             self.enhance_audio(input_audio, output_audio_file, enhancers)
         else:
@@ -161,7 +162,17 @@ class AudioManager:
         return output_audio_file
         
     def enhance_audio_mayavoz(self, noisy_audio, output_audio_file):
-        #TODO
+        
+        model = Mayamodel.from_pretrained("shahules786/mayavoz-waveunet-valentini-28spk")
+        waveform = model.enhance(noisy_audio)
+
+        # this model only works with this sampling rate
+        sr = 16000
+
+        write(
+            output_audio_file, rate=sr, data=waveform.detach().cpu().numpy()
+        )
+        
         return output_audio_file
         
     # https://github.com/lagmoellertim/unsilence
