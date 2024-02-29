@@ -110,7 +110,7 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--enhancers`: You use audio enhancers: --enhancers deepfilternet resembleai mayavoz. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
 
-### [**Examples:**]([#examples])
+### <a name="examples">Examples:</a>
 
 #### Input from a file:
 ```bash
@@ -183,7 +183,7 @@ An input audio may not be used completely. Here some reasons:
 - The range_times do not fit a transcripted segment.
 - The segment has music or not enough quality (MOS under 3), even when enhanced.
 
-If you are not using enhancers and the segments are being discarted because of bad quality you can try --enhancers argument with deepfilternet, resembleai, mayavoz or combine them. See <a name="examples">examples section</a> to learn how to use it.
+If you are not using enhancers and the segments are being discarted because of bad quality you can try --enhancers argument with deepfilternet, resembleai, mayavoz or combine them. See [examples section](#examples) to learn how to use it.
 
 ### Gender detection
 
