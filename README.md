@@ -185,6 +185,10 @@ The gender detection is not accurate enough when probably mixed. If there is no 
 
 - [X] **mayavoz**
 
+## Google colab
+
+- [ ] Add a speech_dataset_generator_example.ipynb file with all available options applied to some noisy audios and good quality audios.
+  
 ## Support multiple datasets
 
 Generator of multiple types of datasets:
