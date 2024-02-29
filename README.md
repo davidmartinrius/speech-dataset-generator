@@ -110,26 +110,39 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--enhancers`: You use audio enhancers: --enhancers deepfilternet resembleai mayavoz. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
 
-**Examples:**
+### **Examples:**
 
+#### Input from a file:
 ```bash
+#No enhancer is used
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-10
 
+#Using deepfilternet enhancer
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet
 
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10
-
+#Using resembleai enhancer
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers resembleai
 
+# Combining enhancers
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet resembleai
+```
 
+#### Input from a folder:
+
+```bash
 python speech_dataset_generator/main.py --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet 
+```
 
+#### Input from youtube (single video or playlists): 
+```bash
+# Youtube single video
 python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
 
+#Combining a youtube video + input file
 python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
 
+#Combining youtube video + input folder
 python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
-
 ```
 
 ## Notes
@@ -139,13 +152,30 @@ You can combine --enhancers. There are available "deepfilternet", "resembleai" a
 
 If you pass multiples those will be executed in the order that are passed. In the case you don't pass enhancers no enhancer will be used.
 
-By default, no enhancer is used. I suggest using deepfilternet for noisy audios.
+By default, no enhancer is used. 
 
+You can combine them all the enhancers in the input.
+
+#### Deepfilternet
+
+I suggest using deepfilternet for noisy audios. It is the one that gives the best results when denoising.
+
+#### Resembleai
 The output sound of resembleai sometimes can be a little distorted. So, it is not always a good choise.
+It can denoise and enhance. If you are combining deepfilternet and resembleai, you can disble resembleai denoising.
 
-The pretreined model of mayavoz only works with a sampling rate of 16000. Only recommended if the source is also 16000 hz as well.
+In the case of resembleai you can play with its parameters at [audio_manager.py](https://github.com/davidmartinrius/speech-dataset-generator/blob/02bfbf7d2ed675472ff8ed15cafeea6188e22bac/speech_dataset_generator/audio_manager/audio_manager.py#L117)
 
-You can combine them.
+solver = "midpoint" #There is "rk4", "euler" and "midpoint" by default
+
+denoising = True
+
+nfe = 128 #range from 1 to 128, if the output sounds like a cassete you can reduce this value
+
+tau = 0 #range from 0 to 1, better if disabled
+
+#### Mayavoz
+The pretrained model of mayavoz only works with a sampling rate of 16000. Only recommended if the input source is also at 16000 hz.
 
 ### The audio is not always 100% used to be splitted into files
 
