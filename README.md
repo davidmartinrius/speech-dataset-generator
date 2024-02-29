@@ -108,7 +108,7 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--range_times`: Specify a range of two integers in the format "start-end". Default is 4-10.
 
-- `--enhancers`: You use audio enhancers: --enhancers deepfilternet resembleai. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
+- `--enhancers`: You use audio enhancers: --enhancers deepfilternet resembleai mayavoz. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
 
 **Examples:**
 
@@ -135,7 +135,7 @@ python speech_dataset_generator/main.py --youtube_download https://www.youtube.c
 ## Notes
 
 ### Audio enhancer argument
-You can combine --enhancers. There are available "deepfilternet", "resembleai" and soon "mayavoz".
+You can combine --enhancers. There are available "deepfilternet", "resembleai" and "mayavoz".
 
 If you pass multiples those will be executed in the order that are passed. In the case you don't pass enhancers no enhancer will be used.
 
@@ -143,7 +143,9 @@ By default, no enhancer is used. I suggest using deepfilternet for noisy audios.
 
 The output sound of resembleai sometimes can be a little distorted. So, it is not always a good choise.
 
-You can play with those and combine them.
+The pretreined model of mayavoz only works with a sampling rate of 16000. Only recommended if the source is also 16000 hz as well.
+
+You can combine them.
 
 ### The audio is not always 100% used to be splitted into files
 
@@ -174,6 +176,14 @@ The gender detection is not accurate enough when probably mixed. If there is no 
 ## Speech rate 
 
 - [X] Detect the speech speed rate for each sentence and add it to the csv output file. The metrics are words per minute (wpm) and syllables per minute (spm)
+
+## Audio enhancers 
+
+- [X] **deepfilternet**
+
+- [X] **resembleai**
+
+- [X] **mayavoz**
 
 ## Support multiple datasets
 
@@ -254,6 +264,8 @@ This project uses several open-source libraries and tools for audio processing. 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
 - [Chroma](https://github.com/chroma-core/chroma)
+
+- [mayavoz](https://github.com/shahules786/mayavoz)
 
 ## License
 
