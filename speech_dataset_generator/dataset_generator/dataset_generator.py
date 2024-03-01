@@ -96,7 +96,7 @@ class DatasetGenerator:
         
         if not results["distances"][0]:
             
-            speaker_name = self.generate_random_speaker_name(24)
+            speaker_name = self.generate_random_number_as_string(24)
 
             collection.add(
                 embeddings=np.array([current_speaker_embedding]),
@@ -115,7 +115,7 @@ class DatasetGenerator:
             return speaker_name
         else:
             
-            speaker_name = self.generate_random_speaker_name(24)
+            speaker_name = self.generate_random_number_as_string(24)
 
             collection.add(
                 embeddings=np.array([current_speaker_embedding]),
@@ -314,6 +314,7 @@ class DatasetGenerator:
             duration = segment["end"] - segment["start"]
             
             if duration < range_start or duration > range_end:
+                print(f"Audio duration greater than range. Range {start} to {end}. Duration {duration}. Audio file: {enhanced_audio_file_path}")
                 continue
             
             file_name = self.create_audio_segment(start, end, enhanced_audio_file_path)
@@ -335,7 +336,7 @@ class DatasetGenerator:
                 continue
             
             gender = self.get_gender(segmentation)
-
+            
             segment["audio_file"]   = file_name
             segment["gender"]       = gender
             segment["duration"]     = round(duration, 3)
