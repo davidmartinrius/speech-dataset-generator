@@ -17,11 +17,7 @@ from mayavoz.models import Mayamodel
 from speech_dataset_generator.utils.utils import get_device
 
 class AudioManager:
-    
-    def __init__(self):
-        window_length = 30 # seconds
-        self.metrics = speechmetrics.load('absolute', window_length)
-        
+            
     def process(self, input_audio, output_directory, enhancers):
         
         if enhancers:
@@ -58,6 +54,8 @@ class AudioManager:
         temp_output = noisy_audio  # Initial audio loading
 
         for enhancement_type in enhancers:
+            print(f"enhancing audio with {enhancement_type}")
+
             if enhancement_type == "deepfilternet":
                 temp_output = self.enhance_audio_deepfilternet(temp_output, output_audio_file)
             elif enhancement_type == "resembleai":
@@ -66,6 +64,8 @@ class AudioManager:
                 temp_output = self.enhance_audio_mayavoz(temp_output, output_audio_file)
         
         self.remove_sliences(temp_output)
+        
+        return temp_output
 
     def enhance_audio_deepfilternet(self, noisy_audio, output_audio_file):
 
@@ -92,6 +92,7 @@ class AudioManager:
 
         save_audio(output_audio_file, enhanced, sr=df_state.sr())  
         
+        # Free memory after inference
         del model, df_state, audio, info, enhanced_chunks, enhanced
         torch.cuda.empty_cache()
         gc.collect()
@@ -152,7 +153,7 @@ class AudioManager:
             
             # Save the enhanced chunk to the list
             enhanced_chunks.append(wav2_chunk)
-
+            
         # Concatenate all enhanced chunks
         enhanced_audio = np.concatenate(enhanced_chunks)
 
@@ -173,11 +174,17 @@ class AudioManager:
             output_audio_file, rate=sr, data=waveform.detach().cpu().numpy()
         )
         
+        # Free memory after inference
+        del model
+        torch.cuda.empty_cache()
+        gc.collect()
+        
         return output_audio_file
         
     # https://github.com/lagmoellertim/unsilence
     def remove_sliences(self, path_to_audio_file):
         
+        print("removing silences")
         u = Unsilence(path_to_audio_file)
         
         u.detect_silence()
@@ -185,12 +192,18 @@ class AudioManager:
         #rewrite the file with no silences
         u.render_media(path_to_audio_file, audio_only=True)  # Audio only specified
         
+        # Free memory after inference
         del u
+        torch.cuda.empty_cache()
+        gc.collect()
         
     #https://github.com/aliutkus/speechmetrics
     def has_speech_quality(self, path_to_audio_file):
+        
+        window_length = 30 # seconds
+        metrics = speechmetrics.load('absolute', window_length)
 
-        scores = self.metrics(path_to_audio_file)
+        scores = metrics(path_to_audio_file)
 
         average_scores = {}
 
@@ -203,9 +216,17 @@ class AudioManager:
             
             average_scores[metric_name] = average_score
             
-        if average_scores['mosnet'] >= 3:
+        mos_value = average_scores['mosnet']
+        if mos_value >= 3:
             return True
-
+        
+        print(f"Discarting audio. Not enough quality. MOS {mos_value} < 3")
+       
+        # Free memory after inference
+        del metrics
+        torch.cuda.empty_cache()
+        gc.collect()
+        
         return False
     
     def has_music(self, segmentation):
