@@ -29,7 +29,7 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 11. **Syllabic and words-per-minute metrics**
 
-### Example of the output folder:
+### Example of the ouput folder:
 ```plaintext
 output
 |-- wavs
