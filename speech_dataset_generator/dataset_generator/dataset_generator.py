@@ -138,7 +138,7 @@ class DatasetGenerator:
         
     def get_transcription(self, enhanced_audio_file_path):
         device = get_device()
-        batch_size = 16 # reduce if low on GPU mem
+        batch_size = 8 # reduce if low on GPU mem
         #compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
         compute_type="int8"
 
@@ -163,7 +163,7 @@ class DatasetGenerator:
             wordlevel_info = []
             for iw, word in enumerate(segment["words"]):
                 
-                if "start" not in word:
+                if any(key not in word for key in ["start", "end", "speaker"]):
                     
                     if iw-1 >= 0:  # Check if iw-1 is a valid index
                         word["start"]   = round(segment["words"][iw-1]["end"] + 0.001, 3)
@@ -192,14 +192,16 @@ class DatasetGenerator:
                         word["end"] = 0.001
                         word["score"] = 1
                         word["speaker"] = segment["speaker"]
+                
+                if "speaker" not in word:
+                    word["speaker"] = segment["speaker"]
 
-                #print("current word", word)
                 wordlevel_info.append({
-                    'word':word["word"],
-                    'start':word["start"],
-                    'end':word["end"],
-                    'speaker':word['speaker'],
-                    'score':word['score']
+                    'word':     word["word"],
+                    'start':    word["start"],
+                    'end':      word["end"],
+                    'speaker':  word['speaker'],
+                    'score':    word['score']
                 })
             
             segment["words"] = wordlevel_info 
