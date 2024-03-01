@@ -20,11 +20,8 @@ class AudioManager:
             
     def process(self, input_audio, output_directory, enhancers):
         
-        if enhancers:
-            output_audio_file = self.get_output_file_name(input_audio, output_directory)
-            self.enhance_audio(input_audio, output_audio_file, enhancers)
-        else:
-            output_audio_file = input_audio
+        output_audio_file = self.get_output_file_name(input_audio, output_directory)
+        self.enhance_audio(input_audio, output_audio_file, enhancers)
         
         if not self.has_speech_quality(output_audio_file):
             return None
@@ -63,7 +60,7 @@ class AudioManager:
             elif enhancement_type == "mayavoz":
                 temp_output = self.enhance_audio_mayavoz(temp_output, output_audio_file)
         
-        self.remove_sliences(temp_output)
+        self.remove_sliences(temp_output, output_audio_file)
         
         return temp_output
 
@@ -83,8 +80,6 @@ class AudioManager:
         enhanced_chunks = []
         for ac in audio_chunks:
             enhanced_chunks.append(enhance(model, df_state, ac))
-            torch.cuda.empty_cache()
-            gc.collect()
 
         enhanced = torch.cat(enhanced_chunks, dim=1)
 
@@ -182,7 +177,7 @@ class AudioManager:
         return output_audio_file
         
     # https://github.com/lagmoellertim/unsilence
-    def remove_sliences(self, path_to_audio_file):
+    def remove_sliences(self, path_to_audio_file, output_audio_file):
         
         print("removing silences")
         u = Unsilence(path_to_audio_file)
@@ -190,7 +185,7 @@ class AudioManager:
         u.detect_silence()
         
         #rewrite the file with no silences
-        u.render_media(path_to_audio_file, audio_only=True)  # Audio only specified
+        u.render_media(output_audio_file, audio_only=True)  # Audio only specified
         
         # Free memory after inference
         del u
@@ -220,7 +215,7 @@ class AudioManager:
         if mos_value >= 3:
             return True
         
-        print(f"Discarting audio. Not enough quality. MOS {mos_value} < 3")
+        print(f"Discarding audio {path_to_audio_file}. Not enough quality. MOS {mos_value} < 3")
        
         # Free memory after inference
         del metrics
