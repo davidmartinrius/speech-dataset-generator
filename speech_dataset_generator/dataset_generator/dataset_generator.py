@@ -34,7 +34,7 @@ class DatasetGenerator:
         ts = str(int(time.time()))
 
         #file_name = os.path.join(path_to_store_audio, ts_encoded + str(random.getrandbits(128)) + ".wav")
-        file_name = os.path.join(self.wavs_directory, ts + str(self.generate_random_speaker_name(24)) + ".wav")
+        file_name = os.path.join(self.wavs_directory, ts + "_" + self.generate_random_number_as_string(24) + ".wav")
 
         t1 = start * 1000
         t2 = end * 1000
@@ -74,12 +74,12 @@ class DatasetGenerator:
             with open(csv_file_name, 'a', encoding='utf-8') as csvFile:
                 csvFile.write(str(newData) +"\n")
 
-    def generate_random_speaker_name(self, digits):
+    def generate_random_number_as_string(self, digits):
         finalNumber = ""
         for i in range(digits // 16):
             finalNumber = finalNumber + str(math.floor(random.random() * 10000000000000000))
         finalNumber = finalNumber + str(math.floor(random.random() * (10 ** (digits % 16))))
-        return f"speaker_{finalNumber}"
+        return str(finalNumber)
 
     def get_speaker_info(self, collection, audio_embeddings_infencer, file_name):
 
