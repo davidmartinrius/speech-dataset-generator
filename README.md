@@ -181,7 +181,7 @@ tau = 0 #range from 0 to 1, better if disabled
 #### Mayavoz
 The pretrained model of mayavoz only works with a sampling rate of 16000. Only recommended if the input source is also at 16000 hz.
 
-### The audio is not always 100% used to be splitted into files
+### The audio is not always 100% splitted into sub files
 
 An input audio may not be used completely. Here some reasons:
 - The range_times do not fit a transcripted segment.
