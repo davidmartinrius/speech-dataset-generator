@@ -61,7 +61,7 @@ outputs
 |   |   |   |-- ...
 ```
 
-### Example of the csv content:
+### Example of the main_data.csv content:
 
 Consider that the values provided are purely fictitious and intended solely for illustrative purposes in this example.
 
