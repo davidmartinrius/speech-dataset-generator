@@ -31,13 +31,34 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 ### Example of the output folder:
 ```plaintext
-output
-|-- wavs
-|   |-- 1272-128104-0000.wav
-|   |-- 1272-128104-0001.wav
-|   |-- ...
-|   |-- 1272-128104-0225.wav
-|-- metadata.csv
+outputs
+|-- main_data.csv
+|
+|-- chroma_database
+|
+|-- enhanced_audios
+|
+|-- ljspeech
+|   |-- wavs
+|   |   |-- 1272-128104-0000.wav
+|   |   |-- 1272-128104-0001.wav
+|   |   |-- ...
+|   |   |-- 1272-128104-0225.wav
+|   |-- metadata.csv
+|
+|-- librispeech
+|   |-- speaker_id1
+|   |   |-- book_id1
+|   |   |   |-- transcription.txt
+|   |   |   |-- file1.wav
+|   |   |   |-- file2.wav
+|   |   |   |-- ...
+|   |-- speaker_id2
+|   |   |-- book_id1
+|   |   |   |-- transcription.txt
+|   |   |   |-- file1.wav
+|   |   |   |-- file2.wav
+|   |   |   |-- ...
 ```
 
 ### Example of the csv content:
