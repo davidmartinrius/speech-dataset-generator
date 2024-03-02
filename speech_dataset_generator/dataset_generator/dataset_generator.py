@@ -22,6 +22,7 @@ from speech_dataset_generator.audio_manager.audio_manager import AudioManager
 from speech_dataset_generator.utils.utils import get_device
 from speech_dataset_generator.speech_rate.speech_rate import SpeechRate
 import shutil
+import csv
 
 load_dotenv()
 
@@ -29,12 +30,12 @@ HF_TOKEN = os.environ.get("HF_TOKEN")
 
 class DatasetGenerator:
 
-    def create_audio_segment(self, start, end, audio_file):
+    def create_audio_segment(self, start, end, audio_file, wavs_directory):
         
         ts = str(int(time.time()))
 
         #file_name = os.path.join(path_to_store_audio, ts_encoded + str(random.getrandbits(128)) + ".wav")
-        file_name = os.path.join(self.wavs_directory, ts + "_" + self.generate_random_number_as_string(24) + ".wav")
+        file_name = os.path.join(wavs_directory, ts + "_" + self.generate_random_number_as_string(24) + ".wav")
 
         t1 = start * 1000
         t2 = end * 1000
@@ -56,23 +57,44 @@ class DatasetGenerator:
 
         return file_name
 
-    def write_data_to_csv(self, transcription, csv_file_name, language):
+    def write_main_data_to_csv(self, transcription, csv_file_name, language):
         
-        for segment in transcription["segments"]:
+        header = ['text', 'audio_file', 'speaker_id', 'gender', 'duration', 'language', 'syllables_per_minute', 'words_per_minute']
+        with open(csv_file_name, 'w', encoding='utf-8', newline='') as csvFile:
+            csv_writer = csv.DictWriter(csvFile, fieldnames=header)
+            csv_writer.writeheader()
             
+        for segment in transcription["segments"]:
             newData = {
-                'text':                     segment["text"],
-                'audio_file':               segment["audio_file"],
-                'speaker':                  segment["generated_speaker_name"],
-                'gender':                   segment["gender"],
-                'duration':                 segment["duration"],
-                'language':                 language,
-                'syllables_per_minute':     segment["syllables_per_minute"],
-                'words_per_minute':         segment["words_per_minute"],
+                'text': segment["text"],
+                'audio_file': segment["audio_file"],
+                'speaker_id': segment["generated_speaker_name"],
+                'gender': segment["gender"],
+                'duration': segment["duration"],
+                'language': language,
+                'syllables_per_minute': segment["syllables_per_minute"],
+                'words_per_minute': segment["words_per_minute"],
             }
 
-            with open(csv_file_name, 'a', encoding='utf-8') as csvFile:
-                csvFile.write(str(newData) +"\n")
+            with open(csv_file_name, 'a', encoding='utf-8', newline='') as csvFile:
+                
+                csv_writer = csv.DictWriter(csvFile, fieldnames=header)
+
+                csv_writer.writerow(newData)
+
+    def write_data_to_csv_ljspeech(self, transcription, csv_file_name):
+        
+        with open(csv_file_name, 'w', encoding='utf-8', newline='') as csvFile:
+
+            csv_writer = csv.writer(csvFile, delimiter='|')
+            
+            for segment in transcription["segments"]:
+                
+                audio_file_name, _ = os.path.splitext(os.path.basename(segment["audio_file"]))
+
+                text = segment["text"]
+
+                csv_writer.writerow([audio_file_name, text, text])
 
     def generate_random_number_as_string(self, digits):
         finalNumber = ""
@@ -305,7 +327,7 @@ class DatasetGenerator:
         return transcription
 
     # This method adds new values such as audio_file, gender and duration  to each segment
-    def filter_transcription_segments_and_assign_values(self, transcription, range_start, range_end, enhanced_audio_file_path):
+    def filter_transcription_segments_and_assign_values(self, transcription, range_start, range_end, enhanced_audio_file_path, wavs_directory):
        
         seg = Segmenter()
         valid_segments = []
@@ -319,7 +341,7 @@ class DatasetGenerator:
                 print(f"Audio duration greater than range. Range {start} to {end}. Duration {duration}. Audio file: {enhanced_audio_file_path}")
                 continue
             
-            file_name = self.create_audio_segment(start, end, enhanced_audio_file_path)
+            file_name = self.create_audio_segment(start, end, enhanced_audio_file_path, wavs_directory)
             
             segmentation = seg(file_name)
             has_music = self.audio_manager_instance.has_music(segmentation)
@@ -361,26 +383,25 @@ class DatasetGenerator:
         # discard audios that only are music or has too poor quality
         # discard parts of the audio that are music if there is speech too
 
+        ljspeech_directory = os.path.join(output_directory, "ljspeech")
+
         self.audio_manager_instance = AudioManager()
         
-        self.wavs_directory = os.path.join(output_directory, 'wavs')
-        if not os.path.exists(self.wavs_directory):
-            os.makedirs(self.wavs_directory, exist_ok=True)
+        wavs_directory = os.path.join(ljspeech_directory, 'wavs')
+        if not os.path.exists(wavs_directory):
+            os.makedirs(wavs_directory, exist_ok=True)
 
-        csv_file_name = os.path.join(output_directory, "metadata.csv") 
         if not os.path.exists(path_to_audio_file):
             raise Exception(f"File {path_to_audio_file} does not exist")
 
         enhanced_audio_file_path = self.audio_manager_instance.process(path_to_audio_file, output_directory, enhancers)
         
-        torch.cuda.empty_cache()
-        gc.collect()        
         if not enhanced_audio_file_path:
             return
         
         transcription, language = self.get_transcription(enhanced_audio_file_path)
         
-        transcription = self.filter_transcription_segments_and_assign_values(transcription, range_start, range_end, enhanced_audio_file_path)
+        transcription = self.filter_transcription_segments_and_assign_values(transcription, range_start, range_end, enhanced_audio_file_path, wavs_directory)
 
         # words_per_minute and syllables_per_minute
         transcription = self.add_wpm_spm_to_each_segment(transcription, language)
@@ -389,17 +410,36 @@ class DatasetGenerator:
         
         transcription = self.assign_name_to_each_speaker(transcription, existing_speakers)
 
-        self.write_data_to_csv(transcription, csv_file_name, language)
+        csv_file_name = os.path.join(output_directory, "main_data.csv") 
+        self.write_main_data_to_csv(transcription, csv_file_name, language)
+
+        csv_file_name = os.path.join(ljspeech_directory, "metadata.csv") 
+        self.write_data_to_csv_ljspeech(transcription, csv_file_name)
+
+        self.iterate_datasets(datasets, transcription, output_directory, path_to_audio_file, existing_speakers)
         
+    def iterate_datasets(self, datasets, transcription, output_directory, path_to_audio_file, existing_speakers):
+        
+        for dataset in datasets:
+            # Dynamically call the function based on the dataset name
+            function_name = f"{dataset}_dataset_generator"
+            
+            if hasattr(self, function_name):
+                function_to_call = getattr(self, function_name)
+                function_to_call(transcription, output_directory, path_to_audio_file, existing_speakers)
+            else:
+                print(f"No matching function found for dataset: {dataset}")
+                
     #Work in progress
     def librispeech_dataset_generator(self, transcription, output_directory, path_to_audio_file, existing_speakers):
     
         librispeech_directory = os.path.join(output_directory, 'librispeech')
         
-        #path is generated_speaker_name/audio_id/
-        #inside audio_id there is the transcription and the audio files
-        #the transcription.txt has
-        #generated_speaker_name-audio_id-number_of_audio transcription
+        # Path is librispeech_directory/generated_speaker_name/audio_id/
+        # Inside audio_id there is the transcription and the audio files
+        # The transcription file has n lines with:
+        # generated_speaker_name-audio_id-number_of_audio transcription
+        # The transcription file name is speaker_id-book_id.trans.txt
         
         filename = os.path.basename(path_to_audio_file)
 
@@ -407,33 +447,34 @@ class DatasetGenerator:
         filename_without_extension, _ = os.path.splitext(filename)
 
         # Make it lowercase and remove non-alphabetic characters
-        cleaned_filename = ''.join(char.lower() for char in filename_without_extension if char.isalpha())
-
-        for existing_speaker in existing_speakers:
-            current_speaker_audio_directory = os.join.path(librispeech_directory, existing_speaker["generated_speaker_name"], cleaned_filename)
+        cleaned_folder_name = ''.join(char.lower() for char in filename_without_extension if char.isalpha())
+        
+        for existing_speaker in existing_speakers.values():
+            current_speaker_audio_directory = os.path.join(librispeech_directory, existing_speaker["generated_speaker_name"], cleaned_folder_name)
             
             os.makedirs(current_speaker_audio_directory, exist_ok=True)
             
         for segment in transcription["segments"]:
             
-            current_speaker_audio_directory = os.join.path(librispeech_directory, segment["generated_speaker_name"], cleaned_filename)
+            current_speaker_audio_directory = os.path.join(librispeech_directory, segment["generated_speaker_name"], cleaned_folder_name)
 
             speaker_id = segment["generated_speaker_name"]
-            book_id    = cleaned_filename
+            book_id    = cleaned_folder_name
             
             file_extension = os.path.splitext(segment["audio_file"])[1]
-
+            
             max_number = -1
             for filename in os.listdir(current_speaker_audio_directory):
                 if filename.startswith(f"{speaker_id}-{book_id}-") and not filename.lower().endswith('.txt'):
+                    
                     current_number = int(filename.rsplit('-', 1)[1].rsplit('.', 1)[0])
                     max_number = max(max_number, current_number)
 
             new_number = max_number + 1
 
-            new_filename = f"{speaker_id}-{book_id}-{new_number}.{file_extension}" 
+            new_filename = f"{speaker_id}-{book_id}-{new_number}{file_extension}" 
             
-            new_full_path = os.join.path(current_speaker_audio_directory, new_filename)
+            new_full_path = os.path.join(current_speaker_audio_directory, new_filename)
             
             shutil.copy(segment["audio_file"], new_full_path)
 

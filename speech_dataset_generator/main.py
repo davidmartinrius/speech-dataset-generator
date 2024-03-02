@@ -22,8 +22,7 @@ if __name__ == "__main__":
     parser.add_argument('--range_times', nargs='?', type=parse_range, default=(4, 10), help='Specify a range of two integers in the format "start-end". Default is 4-10.')
     parser.add_argument('--enhancers', nargs='+', default=[], help='You can combine enhancers too: --enhancers deepfilternet resembleai. Will be executed in the order you write it. By default no enhancer is enabled')
 
-    #work in progress
-    #parser.add_argument('--datasets', nargs='+', type=str, choices=['LJSpeech', 'LibriSpeech'], help='Specify the type of dataset (LJSpeech, LibriSpeech, or both). Required.')
+    parser.add_argument('--datasets', nargs='+', type=str, choices=['librispeech'], help='Specify the dataset type. LJSpeech is always generated. You can also generate LibriSpeech.')
 
     args = parser.parse_args()
     
@@ -33,7 +32,7 @@ if __name__ == "__main__":
     output_directory    = args.output_directory
     start, end          = args.range_times
     enhancers           = args.enhancers
-    datasets            = []#args.datasets
+    datasets            = args.datasets
 
     if not input_file_path and not input_folder and not youtube_download:
         raise Exception("At least 1 input is needed: --input_file_path or --input_folder or --youtube_download")
