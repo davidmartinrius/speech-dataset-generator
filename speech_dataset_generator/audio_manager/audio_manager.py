@@ -35,7 +35,7 @@ class AudioManager:
         # Create the output file name by adding "_enhanced" suffix
         output_file_name = f"{file_name_without_extension}_enhanced{extension}"
         
-        enhanced_directory = os.path.join(output_directory, "enhanced")
+        enhanced_directory = os.path.join(output_directory, "enhanced_audios")
 
         if not os.path.exists(enhanced_directory):
             os.makedirs(enhanced_directory)
