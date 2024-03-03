@@ -5,7 +5,10 @@ setup(
     version='1.0.0',
     author='David Martin Rius',
     url='https://github.com/davidmartinrius/speech-dataset-generator',
+    author_email='0991592@gmail.com',  # Add your email address
     description='🔊 Create labeled datasets, enhance audio quality, identify speakers, support diverse dataset types. 🎧👥📊 Advanced audio processing.',
+    long_description=open('README.md').read(),  # Add a README.md file for a detailed description
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     install_requires=[
         'whisperx==3.1.1',
@@ -30,5 +33,10 @@ setup(
         'console_scripts': [
             'speech-dataset-generator = speech_dataset_generator.main:main',
         ],
+    },
+    python_requires='>=3.10',
+    project_urls={
+        'Source': 'https://github.com/davidmartinrius/speech-dataset-generator',
+        'Issues': 'https://github.com/davidmartinrius/speech-dataset-generator/issues',
     },
 )
