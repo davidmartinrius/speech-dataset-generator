@@ -212,7 +212,10 @@ If you are not using enhancers and the segments are being discarted because of b
 
 ### Gender detection
 
-The gender detection is not accurate enough when probably mixed. If there is no clear gender due the voice, maybe return male or female at random.
+You can use an input audio with multiple speakers and multiple genders. Each speaker will be separated into a fragment and from that fragment the gender will be identified. 
+
+There is an example audio in this project with this case. It is in ./assets/example_audio_1.mp3
+You can try it without coding in speech_dataset_generator_example.ipynb 
 
 # Next Steps
 
