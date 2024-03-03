@@ -222,6 +222,9 @@ You can try it without coding in speech_dataset_generator_example.ipynb
 ## External input sources
 
 - [X] [**yt-dlp**](https://github.com/yt-dlp/yt-dlp)
+- [ ] [**Ted talks**](https://github.com/corralm/ted-scraper)
+- [ ] [**Librivox**](https://github.com/OpenJarbas/audiobooker)
+- [ ] [**LoyalBooks**](https://github.com/OpenJarbas/audiobooker)
 
 ## Vector database
 
