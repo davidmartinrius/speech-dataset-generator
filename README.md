@@ -243,6 +243,7 @@ You can try it without coding in speech_dataset_generator_example.ipynb
 
 - [X] **mayavoz**
 
+- [ ] **[espnet](https://github.com/espnet/espnet/tree/master?tab=readme-ov-file#se-speech-enhancement-and-separation) speech enhancement**
 ## Google colab
 
 - [ ] Add a speech_dataset_generator_example.ipynb file with all available options applied to some noisy audios and good quality audios.
