@@ -250,6 +250,10 @@ You can try it without coding in speech_dataset_generator_example.ipynb
 ## Google colab
 
 - [ ] Add a speech_dataset_generator_example.ipynb file with all available options applied to some noisy audios and good quality audios.
+
+## Upload to PyPi
+
+- [ ] Still pending. There is an uploaded PyPi package but does not work yet. Got some issues setup.py because some of the required packages are not available in PyPi. I am still looking for a way to install those packages. So, by now install the package from requirements.txt or setup.py.
   
 ## Support multiple datasets
 
