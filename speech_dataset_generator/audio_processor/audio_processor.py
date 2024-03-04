@@ -1,9 +1,12 @@
 import os
 import yt_dlp
 import chromadb
+import os
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 from speech_dataset_generator.dataset_generator.dataset_generator import DatasetGenerator
-
     
 def get_local_audio_files(input_folder):
     all_files = os.listdir(input_folder)
@@ -39,6 +42,53 @@ def get_youtube_audio_files(urls, output_directory):
 
     return downloaded_files
 
+def get_librivox_audio_files(urls, output_directory):
+    
+    librivox_files_output_directory = os.path.join(output_directory, "librivox") 
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'sec-ch-ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Linux"'
+    }
+    
+    for url in urls:
+        
+        parsed_url = urlparse(url)
+        headers['GET'] = f'{parsed_url.path} HTTP/1.1'
+
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        results = soup.find_all(class_='chapter-name')
+            
+        hrefs = [c['href'] for c in results]
+            
+        print('found {} chapters to download'.format(len(hrefs)))
+
+        if not os.path.exists(librivox_files_output_directory):
+            os.makedirs(librivox_files_output_directory)
+            print('made new directory at:',librivox_files_output_directory)
+
+        for audio in hrefs:
+            
+            audio_file_name = audio.split('/')[-1][:-3]+'wav'
+            
+            audio_path = os.path.join(librivox_files_output_directory, audio_file_name) 
+
+            if os.path.exists(audio_path):
+                print(f"Already exists: {audio_file_name}")
+                continue
+
+            print('Downloading {} to:'.format(audio),audio_path)
+            file = requests.get(audio, headers=headers)
+            with open(audio_path, 'wb') as f:
+                f.write(file.content)
+    
+    downloaded_files = [os.path.join(librivox_files_output_directory, file_name) for file_name in os.listdir(librivox_files_output_directory)]
+
+    return downloaded_files
+            
 def process_audio_files(audio_files, output_directory, start, end, enhancers, datasets):
     
     dataset_generator = DatasetGenerator()

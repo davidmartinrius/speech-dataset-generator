@@ -29,6 +29,8 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 11. **Syllabic and words-per-minute metrics**
 
+12. **Multiple input sources:** You can either use your own files or download content by pasting URLs from sources such as YouTube, LibriVox, and soon, TED Talks. 
+
 ### Example of the output folder:
 ```plaintext
 outputs
@@ -166,6 +168,25 @@ python speech_dataset_generator/main.py --youtube_download https://www.youtube.c
 python speech_dataset_generator/main.py --youtube_download https://www.youtube.com/watch\?v\=ID  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
 ```
 
+#### Input from LibriVox (one or multiple audiobooks): 
+```bash
+# LibriVox single audiobook
+python speech_dataset_generator/main.py --librivox_download https://librivox.org/audio-book-url/ --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+#Multiple LibriVox audiobooks at a time, in this example there are just 2, but you can pass n urls
+python speech_dataset_generator/main.py --librivox_download https://librivox.org/audio-book-url/ https://librivox.org/another-audio-book-url/ --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+#Combining a LibriVox audiobook + input file
+python speech_dataset_generator/main.py --librivox_download https://librivox.org/audio-book-url/  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+#Combining LibriVox audiobook + input folder
+python speech_dataset_generator/main.py --librivox_download https://librivox.org/audio-book-url/  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+#Also you can download Youtube audios combined with LibriVox
+python speech_dataset_generator/main.py --librivox_download https://librivox.org/audio-book-url/ --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+```
+
 ## Notes
 
 ### <a name="multilingual">Multilingual:</a>
@@ -222,8 +243,8 @@ You can try it without coding in speech_dataset_generator_example.ipynb
 ## External input sources
 
 - [X] [**yt-dlp**](https://github.com/yt-dlp/yt-dlp)
+- [X] [**Librivox**](https://github.com/OpenJarbas/audiobooker)
 - [ ] [**Ted talks**](https://github.com/corralm/ted-scraper)
-- [ ] [**Librivox**](https://github.com/OpenJarbas/audiobooker)
 - [ ] [**LoyalBooks**](https://github.com/OpenJarbas/audiobooker)
 
 ## Vector database

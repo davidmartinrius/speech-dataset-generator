@@ -6,6 +6,7 @@ import time
 import os
 import random
 from dotenv import load_dotenv
+from collections import Counter
 
 import whisperx
 from pydub import AudioSegment
@@ -66,14 +67,14 @@ class DatasetGenerator:
             
         for segment in transcription["segments"]:
             newData = {
-                'text': segment["text"],
-                'audio_file': segment["audio_file"],
-                'speaker_id': segment["generated_speaker_name"],
-                'gender': segment["gender"],
-                'duration': segment["duration"],
-                'language': language,
+                'text':                 segment["text"],
+                'audio_file':           segment["audio_file"],
+                'speaker_id':           segment["generated_speaker_name"],
+                'gender':               segment["dominant_gender"],
+                'duration':             segment["duration"],
+                'language':             language,
                 'syllables_per_minute': segment["syllables_per_minute"],
-                'words_per_minute': segment["words_per_minute"],
+                'words_per_minute':     segment["words_per_minute"],
             }
 
             with open(csv_file_name, 'a', encoding='utf-8', newline='') as csvFile:
@@ -318,14 +319,39 @@ class DatasetGenerator:
         
         return existing_speakers
     
-    def assign_name_to_each_speaker(self, transcription, existing_speakers):
+    # The dominant gender is because the gender inference sometimes fails,
+    # This way when testing among all files it is corrected
+    # The speaker name is given by the chroma database in case the speaker already exists
+    def assign_name_and_dominant_gender_to_each_speaker(self, transcription, existing_speakers):
         
-        for segment in transcription["segments"]:
-            
-            segment["generated_speaker_name"] = existing_speakers[segment["speaker"]]["generated_speaker_name"]
-        
-        return transcription
+        # Create a dictionary to store gender counts for each speaker
+        speaker_gender_counts = {}
 
+        for segment in transcription["segments"]:
+            speaker_id = segment["speaker"]
+            gender = segment["gender"]
+
+            # Initialize the gender counts for the speaker if not already present
+            if speaker_id not in speaker_gender_counts:
+                speaker_gender_counts[speaker_id] = Counter()
+
+            # Increment the gender count for the speaker
+            speaker_gender_counts[speaker_id][gender] += 1
+
+        # Assign the generated speaker name and dominant gender to each segment
+        for segment in transcription["segments"]:
+            speaker_id = segment["speaker"]
+            gender_counts = speaker_gender_counts.get(speaker_id, Counter())
+
+            # Get the gender with the highest count
+            dominant_gender = max(gender_counts, key=gender_counts.get)
+
+            # Assign the generated speaker name and gender to the segment
+            segment["generated_speaker_name"] = existing_speakers[speaker_id]["generated_speaker_name"]
+            segment["dominant_gender"] = dominant_gender
+
+        return transcription
+    
     # This method adds new values such as audio_file, gender and duration  to each segment
     def filter_transcription_segments_and_assign_values(self, transcription, range_start, range_end, enhanced_audio_file_path, wavs_directory):
        
@@ -408,7 +434,7 @@ class DatasetGenerator:
 
         existing_speakers = self.get_existing_speakers(transcription, collection)
         
-        transcription = self.assign_name_to_each_speaker(transcription, existing_speakers)
+        transcription = self.assign_name_and_dominant_gender_to_each_speaker(transcription, existing_speakers)
 
         csv_file_name = os.path.join(output_directory, "main_data.csv") 
         self.write_main_data_to_csv(transcription, csv_file_name, language)
