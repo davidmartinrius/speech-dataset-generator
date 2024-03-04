@@ -121,11 +121,13 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 ```
 
-- `--input_file_path`: (required) Path to the input audio file. Cannot be used with input folder.
+- `--input_file_path`: Path to the input audio file. Cannot be used with input folder.
 
-- `--input_folder`: (required) Path to the input folder containing audio files. Cannot be used with input_file_path
+- `--input_folder`: Path to the input folder containing audio files. Cannot be used with input_file_path
 
-- `--youtube_download`: (optional) Link or links separated by space of youtube videos or playlists. Can be combined with --input_file_path or --input_folder
+- `--youtube_download`: Link or links separated by space of youtube videos or playlists. 
+
+- `--librivox_download`: Link or links separated by space of LibriVox audiobooks.
 
 - `--output_directory`: Output directory for audio files.
 
