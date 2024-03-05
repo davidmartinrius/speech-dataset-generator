@@ -7,7 +7,7 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 ## Here are the key functionalities of the project:
 
-1. **Dataset Generation:** Creation of [**multilingual**](#multilingual)  datasets with Mean Opinion Score (MOS).
+1. **Dataset Generation:** Creation of multilingual datasets with Mean Opinion Score (MOS).
 
 2. **Silence Removal:** It includes a feature to remove silences from audio files, enhancing the overall quality.
 
@@ -29,7 +29,7 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 11. **Syllabic and words-per-minute metrics**
 
-12. **Multiple input sources:** You can either use your own files or download content by pasting URLs from sources such as YouTube, LibriVox and TED Talks. 
+12. **Multiple input sources:** You can either use your own files or download content by pasting URLs from sources such as **YouTube**, **LibriVox** and **TED Talks**. 
 
 ### Example of the output folder:
 ```plaintext
@@ -379,3 +379,8 @@ This project uses several open-source libraries and tools for audio processing. 
 If you plan to use this project in yours: [whisperX](https://github.com/m-bain/whisperX?tab=BSD-4-Clause-1-ov-file) is currently under the BSD-4-Clause license, yt-dlp has no license and all others are under the MIT license or Apache 2.0 license.
 
 This project is licensed under the [MIT License](LICENSE).
+
+
+## Give it a star ⭐️
+
+Did you find this project useful? If so please, consider giving it a star! Your support is greatly appreciated and helps to increase the visibility of the project. Thank you! 😊
