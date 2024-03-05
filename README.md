@@ -384,3 +384,5 @@ This project is licensed under the [MIT License](LICENSE).
 ## Give it a star ⭐️
 
 Did you find this project useful? If so please, consider giving it a star! Your support is greatly appreciated and helps to increase the visibility of the project. Thank you! 😊
+
+[![Star History Chart](https://api.star-history.com/svg?repos=davidmartinrius/speech-dataset-generator&type=Date)](https://star-history.com/#davidmartinrius/speech-dataset-generator&Date)
