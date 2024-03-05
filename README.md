@@ -29,7 +29,7 @@ This repository is dedicated to creating datasets suitable for training text-to-
 
 11. **Syllabic and words-per-minute metrics**
 
-12. **Multiple input sources:** You can either use your own files or download content by pasting URLs from sources such as YouTube, LibriVox, and soon, TED Talks. 
+12. **Multiple input sources:** You can either use your own files or download content by pasting URLs from sources such as YouTube, LibriVox and TED Talks. 
 
 ### Example of the output folder:
 ```plaintext
@@ -120,14 +120,15 @@ Also you can use a youtube video or a youtube playlist as input.
 python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> --output_directory <output_directory> --range_times <start-end> --enhancers <enhancer_types>
 
 ```
+- `--input_file_path`: (source) Path to the input audio file. Cannot be used with input folder.
 
-- `--input_file_path`: Path to the input audio file. Cannot be used with input folder.
+- `--input_folder`: (source) Path to the input folder containing audio files. Cannot be used with input_file_path
 
-- `--input_folder`: Path to the input folder containing audio files. Cannot be used with input_file_path
+- `--youtube_download`: (source) Link or links separated by space of youtube videos or playlists. 
 
-- `--youtube_download`: Link or links separated by space of youtube videos or playlists. 
+- `--librivox_download`: (source) Link or links separated by space of LibriVox audiobooks.
 
-- `--librivox_download`: Link or links separated by space of LibriVox audiobooks.
+- `--tedtalks_download`: (source) Aggregate Ted Talks audio or video links by separating them with spaces. Copy these links directly from the Share button URL, in the "Download" section, where is MP4 and Audio.
 
 - `--output_directory`: Output directory for audio files.
 
@@ -186,7 +187,21 @@ python speech_dataset_generator/main.py --librivox_download https://librivox.org
 
 #Also you can download Youtube audios combined with LibriVox
 python speech_dataset_generator/main.py --librivox_download https://librivox.org/audio-book-url/ --youtube_download https://www.youtube.com/watch\?v\=ID --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+```
 
+#### Input from Ted Talks (one or multiple Ted Talks): 
+```bash
+# Ted Talks single video
+python speech_dataset_generator/main.py --tedtalks_download https://download.ted.com/talks/video-talk.mp3 --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+#Multiple Ted Talks videos at a time, in this example there are just 2, but you can pass n urls
+python speech_dataset_generator/main.py --tedtalks_download https://download.ted.com/talks/video-talk.mp3 https://download.ted.com/talks/another-video-talk.mp3 --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+#Combining a Ted Talks video + input file
+python speech_dataset_generator/main.py --tedtalks_download https://download.ted.com/talks/video-talk.mp3  --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
+
+#Combining Ted Talks video + input folder
+python speech_dataset_generator/main.py --tedtalks_download https://download.ted.com/talks/video-talk.mp3  --input_folder /path/to/folder/of/audios --output_directory /output/directory --range_times 5-15 --enhancers deepfilternet resembleai
 ```
 
 ## Notes
@@ -244,10 +259,9 @@ You can try it without coding in speech_dataset_generator_example.ipynb
 
 ## External input sources
 
-- [X] [**yt-dlp**](https://github.com/yt-dlp/yt-dlp)
-- [X] [**Librivox**](https://github.com/OpenJarbas/audiobooker)
-- [ ] [**Ted talks**](https://github.com/corralm/ted-scraper)
-- [ ] [**LoyalBooks**](https://github.com/OpenJarbas/audiobooker)
+- [X] **Youtube**
+- [X] **Librivox**
+- [X] **Ted talks**
 
 ## Vector database
 

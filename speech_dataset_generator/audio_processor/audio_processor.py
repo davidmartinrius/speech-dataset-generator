@@ -4,7 +4,7 @@ import chromadb
 import os
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 from speech_dataset_generator.dataset_generator.dataset_generator import DatasetGenerator
     
@@ -44,6 +44,10 @@ def get_youtube_audio_files(urls, output_directory):
 
 def get_librivox_audio_files(urls, output_directory):
     
+    downloaded_files = []
+    if not urls:
+        return downloaded_files
+    
     librivox_files_output_directory = os.path.join(output_directory, "librivox") 
 
     headers = {
@@ -53,6 +57,9 @@ def get_librivox_audio_files(urls, output_directory):
         'sec-ch-ua-platform': '"Linux"'
     }
     
+    if not os.path.exists(librivox_files_output_directory):
+        os.makedirs(librivox_files_output_directory)
+
     for url in urls:
         
         parsed_url = urlparse(url)
@@ -65,10 +72,6 @@ def get_librivox_audio_files(urls, output_directory):
         hrefs = [c['href'] for c in results]
             
         print('found {} chapters to download'.format(len(hrefs)))
-
-        if not os.path.exists(librivox_files_output_directory):
-            os.makedirs(librivox_files_output_directory)
-            print('made new directory at:',librivox_files_output_directory)
 
         for audio in hrefs:
             
@@ -89,6 +92,41 @@ def get_librivox_audio_files(urls, output_directory):
 
     return downloaded_files
             
+def get_tedtalks_audio_files(urls, output_directory):
+    
+    downloaded_files = []
+    if not urls:
+        return downloaded_files
+    
+    tedtalks_files_output_directory = os.path.join(output_directory, "tedtalks") 
+
+    if not os.path.exists(tedtalks_files_output_directory):
+        os.makedirs(tedtalks_files_output_directory)
+
+    for url in urls:
+        
+        print("processing ted talk", url)
+        
+        parsed_url = urlparse(url)
+        filename = unquote(os.path.basename(parsed_url.path))
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            
+            audio_path = os.path.join(tedtalks_files_output_directory, filename) 
+
+            with open(audio_path, 'wb') as audio_file:
+                audio_file.write(response.content)
+                
+            print(f"Downloaded '{url}' to '{audio_path}'")
+        else:
+            print(f"Failed to download the audio file from url {url}.")
+            
+    downloaded_files = [os.path.join(tedtalks_files_output_directory, file_name) for file_name in os.listdir(tedtalks_files_output_directory)]
+
+    return downloaded_files
+        
 def process_audio_files(audio_files, output_directory, start, end, enhancers, datasets):
     
     dataset_generator = DatasetGenerator()
