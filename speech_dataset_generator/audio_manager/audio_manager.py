@@ -138,13 +138,27 @@ class AudioManager:
         audio_chunks = self.split_audio_into_chunks(dwav.cpu().numpy(), chunk_size)
 
         enhanced_chunks = []
+        
+        run_dir = "/app/model_repo/enhancer_stage2/"
+
+        if not os.path.exists(run_dir):
+            run_dir = None
 
         for chunk in audio_chunks:
             
             chunk_tensor = torch.tensor(chunk)
 
             # Apply enhancement to each chunk
-            wav2_chunk, new_sr = resemble_enhancer(chunk_tensor, sr, device, nfe=nfe, solver=solver, lambd=lambd, tau=tau)
+            wav2_chunk, new_sr = resemble_enhancer(
+                chunk_tensor, 
+                sr, 
+                device, 
+                nfe=nfe, 
+                solver=solver, 
+                lambd=lambd, 
+                tau=tau,
+                run_dir=run_dir
+            )
             
             # Save the enhanced chunk to the list
             enhanced_chunks.append(wav2_chunk)

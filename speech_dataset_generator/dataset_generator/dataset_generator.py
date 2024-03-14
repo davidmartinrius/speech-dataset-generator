@@ -27,7 +27,16 @@ import csv
 
 load_dotenv()
 
+# Access the HF_TOKEN environment variable
 HF_TOKEN = os.environ.get("HF_TOKEN")
+
+# If HF_TOKEN is not set, try getting it from the OS environment
+if HF_TOKEN is None:
+    HF_TOKEN = os.getenv("HF_TOKEN")
+
+# Check if HF_TOKEN is set
+if not HF_TOKEN:
+    raise ValueError("HF_TOKEN is not set. Please set the environment variable.")
 
 class DatasetGenerator:
 
