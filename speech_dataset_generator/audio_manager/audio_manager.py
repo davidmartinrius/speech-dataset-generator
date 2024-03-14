@@ -157,7 +157,6 @@ class AudioManager:
                 solver=solver, 
                 lambd=lambd, 
                 tau=tau,
-                run_dir=run_dir
             )
             
             # Save the enhanced chunk to the list

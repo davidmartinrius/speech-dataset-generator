@@ -33,12 +33,11 @@ RUN apt-get update && \
 COPY . /app
 
 # Create directories for the files
-RUN mkdir -p /app/model_repo/enhancer_stage2/ds/G/default
-
+#RUN mkdir -p /app/model_repo/enhancer_stage2/ds/G/default
 # Download files using wget
-RUN wget -O /app/model_repo/enhancer_stage2/hparams.yaml "https://huggingface.co/ResembleAI/resemble-enhance/resolve/main/enhancer_stage2/hparams.yaml?download=true" && \
-    wget -O /app/model_repo/enhancer_stage2/ds/G/latest "https://huggingface.co/ResembleAI/resemble-enhance/resolve/main/enhancer_stage2/ds/G/latest?download=true" && \
-    wget -O /app/model_repo/enhancer_stage2/ds/G/default/mp_rank_00_model_states.pt "https://huggingface.co/ResembleAI/resemble-enhance/resolve/main/enhancer_stage2/ds/G/default/mp_rank_00_model_states.pt?download=true"
+#RUN wget -O /app/model_repo/enhancer_stage2/hparams.yaml "https://huggingface.co/ResembleAI/resemble-enhance/resolve/main/enhancer_stage2/#hparams.yaml?download=true" && \
+#    wget -O /app/model_repo/enhancer_stage2/ds/G/latest "https://huggingface.co/ResembleAI/resemble-enhance/resolve/main/enhancer_stage2/ds/G/latest?download=true" && \
+#    wget -O /app/model_repo/enhancer_stage2/ds/G/default/mp_rank_00_model_states.pt "https://huggingface.co/ResembleAI/resemble-enhance/resolve/main/enhancer_stage2/ds/G/default/mp_rank_00_model_states.pt?download=true"
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
