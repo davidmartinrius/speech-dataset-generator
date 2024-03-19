@@ -5,9 +5,15 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, unquote
+import secrets
+import string
 
 from speech_dataset_generator.dataset_generator.dataset_generator import DatasetGenerator
-    
+
+def generate_random_string(length):
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
+
 def get_local_audio_files(input_folder):
     all_files = os.listdir(input_folder)
     return [os.path.join(input_folder, file) for file in all_files if file.lower().endswith(('.mp3', '.wav', '.flac', '.ogg', '.aac', '.wma'))]
@@ -23,10 +29,10 @@ def get_youtube_audio_files(urls, output_directory):
     if not os.path.exists(youtube_files_output_directory):
         os.makedirs(youtube_files_output_directory)
         
-    audio_format = "wav"
-    
     for url in urls:
-        output_template = os.path.join(youtube_files_output_directory, f"%(title)s.{audio_format}")
+        audio_file_name = generate_random_string(24) + '.wav'
+
+        output_template = os.path.join(youtube_files_output_directory, audio_file_name)
             
         ydl_opts = {
             'format': 'bestaudio/best',
@@ -75,7 +81,7 @@ def get_librivox_audio_files(urls, output_directory):
 
         for audio in hrefs:
             
-            audio_file_name = audio.split('/')[-1][:-3]+'wav'
+            audio_file_name = generate_random_string(24) + '.wav'
             
             audio_path = os.path.join(librivox_files_output_directory, audio_file_name) 
 
@@ -107,8 +113,7 @@ def get_tedtalks_audio_files(urls, output_directory):
         
         print("processing ted talk", url)
         
-        parsed_url = urlparse(url)
-        filename = unquote(os.path.basename(parsed_url.path))
+        filename = generate_random_string(24) + ".wav"
 
         response = requests.get(url)
 
