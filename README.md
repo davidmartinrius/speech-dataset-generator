@@ -79,7 +79,7 @@ Consider that the values provided are purely fictitious and intended solely for 
 | Goodbye!                | wavs/1272-128104-0225.wav    | Speaker78      | male       | 5.1         | en          | 1.41               | 1.18                 |
 
 ```
-## Installation
+## Install
 
 Please note that this project has been tested and verified to work on Ubuntu 22. Although it has not been tested on macOS and Windows nor on other unix distributions.
 
@@ -365,7 +365,7 @@ In case you do not have a gpu or you want to distribute this as a service.
 runpod is a cloud GPU on demand. It has a good integration with python and docker. Also it has an affordable pricing.
 
 - [ ] Explain how to create a storage in runpod
-- [ ] Create a base installation to the storage with a Pod
+- [ ] Create a base install to the storage with a Pod
 - [ ] Launch a serverless instance with a Docker instance of this project
 - [ ] Call the serverless custom API endpoints to upload files, download generated datasets, convert datasets to other types of datasets, etc
 
