@@ -139,6 +139,7 @@ class AudioManager:
 
         enhanced_chunks = []
         
+        # For Docker
         run_dir = "/app/model_repo/enhancer_stage2/"
 
         if not os.path.exists(run_dir):
@@ -157,6 +158,7 @@ class AudioManager:
                 solver=solver, 
                 lambd=lambd, 
                 tau=tau,
+                #run_dir=run_dir
             )
             
             # Save the enhanced chunk to the list

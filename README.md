@@ -95,6 +95,8 @@ or
 
 pip install -e .
 
+# Finally install pytorch 2.1.1 with your current cuda version. For example:
+pip install --upgrade torch==2.1.1 torchaudio torchvision --extra-index-url https://download.pytorch.org/whl/cu121
 ```
 
 
@@ -284,6 +286,34 @@ You can try it without coding in speech_dataset_generator_example.ipynb
 - [X] **mayavoz**
 
 - [ ] **[espnet](https://github.com/espnet/espnet/tree/master?tab=readme-ov-file#se-speech-enhancement-and-separation) speech enhancement**
+
+## Docker image
+
+- [ ] **Create a docker image for ease of use.** 
+
+### Example of docker usage (image not available yet)
+```bash
+docker run -p 4000:80 -e HF_TOKEN=your_hf_token \
+  -v /your/local/output/folder:/app/output \
+  --gpus all \
+  davidmartinrius/speech-dataset-generator \
+  --input_file /app/assets/example_audio_1.wav \
+  --output_directory /app/output \
+  --range_times 4-10 \
+  --enhancers deepfilternet resembleai
+```
+```bash
+docker run -p 4000:80 -e HF_TOKEN=your_hf_token \
+  -v /your/local/output/folder:/app/output \
+  -v /your/audio/file.mp3:/app/file.wav \
+  --gpus all \
+  davidmartinrius/speech-dataset-generator \
+  --input_file /app/file.wav \
+  --output_directory /app/output \
+  --range_times 4-10 \
+  --enhancers deepfilternet resembleai
+```
+
 ## Google colab
 
 - [ ] Add a speech_dataset_generator_example.ipynb file with all available options applied to some noisy audios and good quality audios.
@@ -327,10 +357,6 @@ I have to look for a way to extract all the needed features for each dataset typ
 - [ ] **Generate datasets**
 
 - [ ] **Dataset converter**
-
-## Docker image
-
-- [ ] **Create a docker image for ease of use.**
 
 ## Runpod serverless instance
 

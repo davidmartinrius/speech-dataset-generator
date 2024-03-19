@@ -15,11 +15,11 @@ setup(
         'faster-whisper==0.10.1',
         'pydub==0.25.1',
         'python-dotenv==1.0.1',
-        'inaSpeechSegmenter==0.7.7',
+        'inaSpeechSegmenter==0.7.8',
         'unsilence @ git+https://github.com/davidmartinrius/unsilence.git',
         'deepfilternet',
         'resemble-enhance @ git+https://github.com/davidmartinrius/resemble-enhance.git',
-        'speechmetrics @ git+https://github.com/aliutkus/speechmetrics#egg=speechmetrics',
+        'speechmetrics @ git+https://github.com/davidmartinrius/speechmetrics#egg=speechmetrics',
         'yt-dlp',
         'chromadb==0.4.23',
         'pyphen==0.14.0',
@@ -27,7 +27,9 @@ setup(
         'konlpy==0.6.0',
         'speechbrain==0.5.16',
         'mayavoz @ git+https://github.com/davidmartinrius/mayavoz.git',
-        'bs4==0.0.2'
+        'bs4==0.0.2',
+        'numpy==1.24',
+        'tensorflow[and-cuda]<=2.16.1',
     ],
     entry_points={
         'console_scripts': [
