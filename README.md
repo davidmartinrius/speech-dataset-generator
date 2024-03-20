@@ -79,7 +79,7 @@ Consider that the values provided are purely fictitious and intended solely for 
 | Goodbye!                | wavs/1272-128104-0225.wav    | Speaker78      | male       | 5.1         | en          | 1.41               | 1.18                 |
 
 ```
-## Install
+## Installation
 
 Please note that this project has been tested and verified to work on Ubuntu 22. Although it has not been tested on macOS and Windows nor on other unix distributions.
 
