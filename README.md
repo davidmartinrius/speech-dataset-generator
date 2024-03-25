@@ -333,6 +333,8 @@ Generator of multiple types of datasets:
 - [X] **LJSpeech** This is the default one. When you generate a new dataset a LJSpeech format is given. It still does not split by train/dev/test, but creates a metadata.csv
     
 - [ ] **LibriSpeech** Currently in development. Work in progress
+      
+- [ ] **[Metavoice-src](https://github.com/metavoiceio/metavoice-src)** Example of the dataset: https://github.com/metavoiceio/metavoice-src/blob/main/datasets/sample_dataset.csv
 
 - [ ] **Common Voice 11**
 
