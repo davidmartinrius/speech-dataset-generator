@@ -44,7 +44,7 @@ def get_youtube_audio_files(urls, output_directory):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
             
-    downloaded_files = [os.path.join(youtube_files_output_directory, file_name) for file_name in os.listdir(youtube_files_output_directory)]
+        downloaded_files.append(output_template)
 
     return downloaded_files
 
@@ -93,8 +93,8 @@ def get_librivox_audio_files(urls, output_directory):
             file = requests.get(audio, headers=headers)
             with open(audio_path, 'wb') as f:
                 f.write(file.content)
-    
-    downloaded_files = [os.path.join(librivox_files_output_directory, file_name) for file_name in os.listdir(librivox_files_output_directory)]
+                
+            downloaded_files.append(audio_path)
 
     return downloaded_files
             
@@ -128,7 +128,7 @@ def get_tedtalks_audio_files(urls, output_directory):
         else:
             print(f"Failed to download the audio file from url {url}.")
             
-    downloaded_files = [os.path.join(tedtalks_files_output_directory, file_name) for file_name in os.listdir(tedtalks_files_output_directory)]
+        downloaded_files.append(audio_path)
 
     return downloaded_files
         

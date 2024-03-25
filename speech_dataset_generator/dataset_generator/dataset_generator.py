@@ -465,6 +465,42 @@ class DatasetGenerator:
             else:
                 print(f"No matching function found for dataset: {dataset}")
                 
+    def metavoice_dataset_generator(self, transcription, output_directory, path_to_audio_file, existing_speakers):
+        
+        metavoice_directory = os.path.join(output_directory, 'metavoice')
+        
+        metavoice_data_directory = os.path.join(output_directory, 'metavoice', 'data')
+
+        os.makedirs(metavoice_data_directory, exist_ok=True)
+        
+        # CSV file path
+        csv_file_path = os.path.join(metavoice_directory, 'metavoice_dataset.csv')
+
+        # Check if the CSV file exists
+        csv_exists = os.path.exists(csv_file_path)
+        
+        with open(csv_file_path, 'a', newline='') as csvfile:
+            fieldnames = ['audio_files', 'captions']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter='|')
+
+            # Write headers only if CSV file doesn't exist
+            if not csv_exists:
+                writer.writeheader()
+
+            for segment in transcription["segments"]:
+                            
+                shutil.copy(segment["audio_file"], metavoice_data_directory)
+                
+                basename_without_extension = os.path.splitext(os.path.basename(segment["audio_file"]))[0]
+                
+                transcription_file_path = os.path.join(metavoice_data_directory, f'{basename_without_extension}.txt')
+
+                with open(transcription_file_path, 'w', encoding='utf-8') as transcription_file:
+                    transcription_file.write(segment["text"])
+
+                # Write data to CSV file
+                writer.writerow({'audio_files': segment["audio_file"], 'captions': transcription_file_path})
+
     #Work in progress
     def librispeech_dataset_generator(self, transcription, output_directory, path_to_audio_file, existing_speakers):
     
@@ -516,5 +552,5 @@ class DatasetGenerator:
             new_file_data = f"{speaker_id}-{book_id}-{new_number}.{file_extension}" 
 
             transcription_file_path = os.path.join(current_speaker_audio_directory, f"{speaker_id}-{book_id}.trans.txt")
-            with open(transcription_file_path, 'a') as transcription_file:
+            with open(transcription_file_path, 'a', encoding='utf-8') as transcription_file:
                 transcription_file.write(f"{new_file_data} {segment['text']}\n")

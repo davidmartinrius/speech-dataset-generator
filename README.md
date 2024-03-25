@@ -136,14 +136,16 @@ python speech_dataset_generator/main.py --input_file_path <path_to_audio_file> -
 
 - `--range_times`: Specify a range of two integers in the format "start-end". Default is 4-10.
 
-- `--enhancers`: You use audio enhancers: --enhancers deepfilternet resembleai mayavoz. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
+- `--enhancers`: You can use audio enhancers: --enhancers deepfilternet resembleai mayavoz. Will be executed in the order you write it. By default no enhancer is set. By now deepfilternet gives the best results when enhancing and denoising an audio. 
+
+- `--datasets`: there are available extra dataset types: metavoice and librispeech. librispeech is in beta version. --datasets metavoice librispeech
 
 ### <a name="examples">Examples:</a>
 
 #### Input from a file:
 ```bash
 #No enhancer is used
-python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-10
+python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 5-10 --datasets metavoice
 
 #Using deepfilternet enhancer
 python speech_dataset_generator/main.py --input_file_path /path/to/audio/file.mp3 --output_directory /output/directory --range_times 4-10 --enhancers deepfilternet
@@ -331,10 +333,11 @@ docker run -p 4000:80 -e HF_TOKEN=your_hf_token \
 Generator of multiple types of datasets:
 
 - [X] **LJSpeech** This is the default one. When you generate a new dataset a LJSpeech format is given. It still does not split by train/dev/test, but creates a metadata.csv
+
+- [X] **[Metavoice-src](https://github.com/metavoiceio/metavoice-src)** Example of the dataset: https://github.com/metavoiceio/metavoice-src/blob/main/datasets/sample_dataset.csv
     
 - [ ] **LibriSpeech** Currently in development. Work in progress
       
-- [ ] **[Metavoice-src](https://github.com/metavoiceio/metavoice-src)** Example of the dataset: https://github.com/metavoiceio/metavoice-src/blob/main/datasets/sample_dataset.csv
 
 - [ ] **Common Voice 11**
 

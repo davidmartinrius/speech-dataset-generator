@@ -24,7 +24,7 @@ if __name__ == "__main__":
     parser.add_argument('--range_times', nargs='?', type=parse_range, default=(4, 10), help='Specify a range of two integers in the format "start-end". Default is 4-10.')
     parser.add_argument('--enhancers', nargs='+', default=[], help='You can combine enhancers too: --enhancers deepfilternet resembleai. Will be executed in the order you write it. By default no enhancer is enabled')
 
-    parser.add_argument('--datasets', nargs='+', type=str, choices=['librispeech'], help='Specify the dataset type. LJSpeech is always generated. You can also generate LibriSpeech.')
+    parser.add_argument('--datasets', nargs='+', type=str, choices=['librispeech','metavoice'], help='Specify the dataset type. LJSpeech is always generated. You can also generate LibriSpeech.')
 
     args = parser.parse_args()
     
